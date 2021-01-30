@@ -1,0 +1,18 @@
+[package]
+name = "rscompress"
+version = "0.1.0"
+authors = ["ucyo <cayoglu@me.com>"]
+edition = "2018"
+license = "MIT"
+description = "Library for compression of floating-point data."
+homepage = "https://github.com/ucyo/rscompress"
+documentation = "https://github.com/ucyo/rscompress/"
+repository = "https://github.com/ucyo/rscompress/"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rscompress-transformation = {version = "0.1.*", path = "../transformation"}
+rscompress-approximation = {version = "0.1.*", path = "../approximation"}
+rscompress-encoding = {version = "0.1.*", path = "../encoding"}
+rscompress-checksums = {version = "0.1.*", path = "../checksums"}
