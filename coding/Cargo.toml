@@ -1,10 +1,10 @@
 [package]
-name = "rscompress-encoding"
+name = "rscompress-coding"
 version = "0.1.0"
 authors = ["ucyo <cayoglu@me.com>"]
 edition = "2018"
 license = "MIT"
-description = "Library for encoding of floating-point data."
+description = "Library for coding of floating-point data."
 homepage = "https://github.com/ucyo/rscompress"
 documentation = "https://github.com/ucyo/rscompress/"
 repository = "https://github.com/ucyo/rscompress/"

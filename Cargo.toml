@@ -3,7 +3,7 @@
 members = [
     "transformation",
     "approximation",
-    "encoding",
+    "coding",
     "checksums",
     "base"
 ]

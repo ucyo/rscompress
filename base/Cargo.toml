@@ -1,6 +1,6 @@
 [package]
 name = "rscompress"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["ucyo <cayoglu@me.com>"]
 edition = "2018"
 license = "MIT"
@@ -14,5 +14,5 @@ repository = "https://github.com/ucyo/rscompress/"
 [dependencies]
 rscompress-transformation = {version = "0.1.*", path = "../transformation"}
 rscompress-approximation = {version = "0.1.*", path = "../approximation"}
-rscompress-encoding = {version = "0.1.*", path = "../encoding"}
+rscompress-coding = {version = "0.1.*", path = "../coding"}
 rscompress-checksums = {version = "0.1.*", path = "../checksums"}

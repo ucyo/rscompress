@@ -27,14 +27,14 @@ All compression algorithms follow the same basic structure:
 
 1. Decorrelate data using transformations
 2. Approximate the data, if lossy compression is needed
-3. Encode the data
+3. Code the data
 
 Additionally, check if each step executed as expected.
 
 ```
                    +----------------+      lossless      +----------+
                    |                |                    |          |
-Start   +------>   | Transformation |   +------------>   | Encoding |   +------>   End
+Start   +------>   | Transformation |   +------------>   |  Coding  |   +------>   End
                    |                |                    |          |
                    +----------------+                    +----------+
 
@@ -71,9 +71,9 @@ Approximations have the following properties:
 - Approximation algorithms are not reversible.
 - The information loss is guaranteed to be within the threshold `theta`
 
-**Encodings** are algorithms where the actual compression happens.
+**Codings** are algorithms where the actual compression happens.
 The information is being saved on disk as compact as possible.
 Examples are [Huffman](https://en.wikipedia.org/wiki/Huffman_coding) or
-[Arithmetic](https://en.wikipedia.org/wiki/Arithmetic_coding) encodings.
+[Arithmetic](https://en.wikipedia.org/wiki/Arithmetic_coding) coding.
 
 **Checksums** are algorithms to check the integrity of the data at each step e.g. [Adler-32](https://en.wikipedia.org/wiki/Adler-32).
