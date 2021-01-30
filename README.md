@@ -51,3 +51,29 @@ Start   +------>   | Transformation |   +------------>   | Encoding |   +------>
                    +---------------+
 ```
 This library will follow the same principles.
+
+**Transformations** are algorithms which represent the same information using a different alphabet.
+Good transformation algorithms eliminate redundant information in the data.
+A mathematical function can be seen as a transformation of a series of data.
+The series `1 1 2 3 5 8 13 21 ..` can expressed as `f(x) = f(x-1) + f(x-2)`.
+We mapped the information represented in alphabet A (integers) to an alphabet B (letters + integers) which is more compact.
+It is important to note that all transformations must have two properties:
+
+- Applying a transformation algorithm to data, does not loose information.
+- All transformation algorithms are reversible, such that the original representation can be reconstructed from the new alphabet.
+
+**Approximations** are algorithms which loose information for the sake of better compression.
+Given a threshold `theta` (this can be absolute or relative), the algorithm maps the data from alphabet A to B with an information lose within the expected threshold.
+An example for an approximation is the `~=` operator known from primary school e.g. `1/3 ~= 0.3`.
+Approximations have the following properties:
+
+- Applying an approximation algorithm to data, results in information loss.
+- Approximation algorithms are not reversible.
+- The information loss is guaranteed to be within the threshold `theta`
+
+**Encodings** are algorithms where the actual compression happens.
+The information is being saved on disk as compact as possible.
+Examples are [Huffman](https://en.wikipedia.org/wiki/Huffman_coding) or
+[Arithmetic](https://en.wikipedia.org/wiki/Arithmetic_coding) encodings.
+
+**Checksums** are algorithms to check the integrity of the data at each step e.g. [Adler-32](https://en.wikipedia.org/wiki/Adler-32).
