@@ -1,5 +1,8 @@
 
 use super::Checksum;
+use log::{info, debug};
+
+#[derive(Debug)]
 struct Adler32 {
     a: u16,
     b: u16,
@@ -7,6 +10,8 @@ struct Adler32 {
 
 impl Adler32 {
     fn new() -> Self {
+        info!("New Adler32 checksum");
+
         Adler32 {
             a: 1,
             b: 0,
@@ -19,11 +24,13 @@ impl Checksum for Adler32 {
         for byte in data.iter() {
             self.a += *byte as u16 % 65535;
             self.b += self.a % 65535;
-            println!("{:?} {:?}", self.a, self.b)
+            debug!("Adler32 Update: {}, New State: {:?}", byte, self)
         }
     }
     fn checksum(&self) -> u32 {
-        ((self.b as u32) << 16) | self.a as u32
+        let result = ((self.b as u32) << 16) | self.a as u32;
+        info!("Adler32 Checksum: {}", result);
+        result
     }
 }
 
