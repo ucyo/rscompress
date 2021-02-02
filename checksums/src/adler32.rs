@@ -1,6 +1,5 @@
-
 use super::Checksum;
-use log::{info, debug};
+use log::{debug, info};
 
 #[derive(Debug)]
 struct Adler32 {
@@ -11,11 +10,7 @@ struct Adler32 {
 impl Adler32 {
     fn new() -> Self {
         info!("New Adler32 checksum");
-
-        Adler32 {
-            a: 1,
-            b: 0,
-        }
+        Adler32 { a: 1, b: 0 }
     }
 }
 
