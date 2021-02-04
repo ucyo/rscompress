@@ -1,5 +1,9 @@
-# rscompress
-A library for compression of floating-point data.
+<h1 align='center'>rscompress</h1>
+
+<p align=center>
+  A library for compression of floating-point data. <br><br>
+  <img src="assets/logo.svg" height="368"/>
+</p>
 
 ## Disclaimer
 This is a rewrite and merge of several compression algorithms developed during my time as a phd student:
