@@ -3,8 +3,8 @@ use std::error::Error;
 use std::fmt;
 
 trait Checksum {
-    fn update(&mut self, data: &[u8]);
-    fn checksum(&self) -> u32;
+    fn update(&mut self, data: &[u8]) -> Option<usize>;
+    fn checksum(&self) -> Result<u32, ChecksumError>;
 }
 
 #[derive(Debug)]

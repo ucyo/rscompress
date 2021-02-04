@@ -1,4 +1,4 @@
-use super::Checksum;
+use super::{Checksum, ChecksumError};
 use log::{debug, info};
 
 #[derive(Debug)]
@@ -15,17 +15,18 @@ impl Adler32 {
 }
 
 impl Checksum for Adler32 {
-    fn update(&mut self, data: &[u8]) {
+    fn update(&mut self, data: &[u8]) -> Option<usize> {
         for byte in data.iter() {
-            self.a += *byte as u16 % 65535;
-            self.b += self.a % 65535;
+            self.a += *byte as u16 % u16::MAX;
+            self.b += self.a % u16::MAX;
             debug!("Adler32 Update: {}, New State: {:?}", byte, self)
         }
+        return Some(data.len());
     }
-    fn checksum(&self) -> u32 {
+    fn checksum(&self) -> Result<u32, ChecksumError> {
         let result = ((self.b as u32) << 16) | self.a as u32;
         info!("Adler32 Checksum: {}", result);
-        result
+        Ok(result)
     }
 }
 
@@ -38,6 +39,6 @@ mod tests {
         let data: Vec<u8> = vec![87, 105, 107, 105, 112, 101, 100, 105, 97];
 
         a.update(&data);
-        assert_eq!(a.checksum(), 0x11E60398)
+        assert_eq!(a.checksum().unwrap(), 0x11E60398)
     }
 }
