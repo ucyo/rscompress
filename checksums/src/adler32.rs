@@ -1,6 +1,10 @@
+//! Adler32 checksum
+//!
+//! Implementation of the Adler32 checksum algorithm as described [here](https://en.wikipedia.org/wiki/Adler-32).
 use super::{Checksum, ChecksumError};
 use log::{debug, info};
 
+/// Adler32 struct to save normal and aggregated sum
 #[derive(Debug)]
 struct Adler32 {
     a: u16,
@@ -8,12 +12,15 @@ struct Adler32 {
 }
 
 impl Adler32 {
+
+    /// Generate new Adler32 struct
     fn new() -> Self {
         info!("New Adler32 checksum");
         Adler32 { a: 1, b: 0 }
     }
 }
 
+/// Implementation of the Checksum trait for Adler32
 impl Checksum for Adler32 {
     fn update(&mut self, data: &[u8]) -> Option<usize> {
         for byte in data.iter() {
