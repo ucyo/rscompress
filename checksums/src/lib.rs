@@ -41,3 +41,16 @@ impl fmt::Display for ChecksumError {
         }
     }
 }
+
+#[macro_export]
+macro_rules! test_checksum {
+    ($func_name:ident, $method:ident, $test_string:expr, $expected:expr) => {
+        #[test]
+        fn $func_name() {
+            let mut a = $method::new();
+            let data = $test_string.as_bytes();
+            a.update(&data);
+            assert_eq!(a.checksum().unwrap(), $expected)
+        }
+    };
+}
