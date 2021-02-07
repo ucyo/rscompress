@@ -13,3 +13,10 @@ repository = "https://github.com/ucyo/rscompress/"
 
 [dependencies]
 log = "0.4.*"
+
+[dev-dependencies]
+criterion = "0.3.*"
+
+[[bench]]
+name = "bench"
+harness = false
