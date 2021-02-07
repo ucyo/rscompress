@@ -40,12 +40,9 @@ impl Checksum for Adler32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[test]
-    fn it_works() {
-        let mut a = Adler32::new();
-        let data = "Wikipedia".as_bytes();
+    use crate::test_checksum;
 
-        a.update(&data);
-        assert_eq!(a.checksum().unwrap(), 0x11E60398)
-    }
+    test_checksum!(test_wikipedia, Adler32, "Wikipedia", 0x11E60398);
+    test_checksum!(test_awesome, Adler32, "Awesome-string-baby", 0x49D50761);
+    test_checksum!(test_greatness, Adler32, "This is great", 0x20AF04C8);
 }
