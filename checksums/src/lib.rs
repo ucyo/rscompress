@@ -9,15 +9,17 @@ mod adler32;
 use std::error::Error;
 use std::fmt;
 
+pub use adler32::Adler32;
+
 /// Trait for calculating checksums from binary data
-trait Checksum {
+pub trait Checksum {
     fn update(&mut self, data: &[u8]) -> Option<usize>;
     fn checksum(&self) -> Result<u32, ChecksumError>;
 }
 
 /// An enum representing possible errors during checksum calculation
 #[derive(Debug)]
-enum ChecksumError {
+pub enum ChecksumError {
     /// The final checksum can not be calculated
     NoChecksum,
     /// Error during updating of the checksums

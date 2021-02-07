@@ -6,7 +6,7 @@ use log::{debug, info};
 
 /// Adler32 struct to save normal and aggregated sum
 #[derive(Debug)]
-struct Adler32 {
+pub struct Adler32 {
     a: u16,
     b: u16,
 }
@@ -14,7 +14,7 @@ struct Adler32 {
 impl Adler32 {
 
     /// Generate new Adler32 struct
-    fn new() -> Self {
+    pub fn new() -> Self {
         info!("New Adler32 checksum");
         Adler32 { a: 1, b: 0 }
     }
