@@ -5,7 +5,7 @@ use super::{Checksum, ChecksumError};
 use log::{debug, info};
 
 /// Adler32 struct to save normal and aggregated sum
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Adler32 {
     a: u16,
     b: u16,
@@ -28,7 +28,7 @@ impl Checksum for Adler32 {
             self.b += self.a % u16::MAX;
             debug!("Adler32 Update: {}, New State: {:?}", byte, self)
         }
-        return Some(data.len());
+        Some(data.len())
     }
     fn checksum(&self) -> Result<u32, ChecksumError> {
         let result = ((self.b as u32) << 16) | self.a as u32;
