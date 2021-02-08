@@ -6,10 +6,12 @@
 //! as the original data.
 
 mod adler32;
+mod crc32;
 use std::error::Error;
 use std::fmt;
 
 pub use adler32::Adler32;
+pub use crc32::CRC32;
 
 /// Trait for calculating checksums from binary data
 pub trait Checksum {
