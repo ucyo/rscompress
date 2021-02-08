@@ -1,17 +1,15 @@
 use criterion::{criterion_group, criterion_main};
-use criterion::{Criterion, BenchmarkId};
+use criterion::{BenchmarkId, Criterion};
 use rscompress_checksums::{Adler32, Checksum};
 
-fn do_adler32_checksum(data: &[u8]) -> u32{
+fn do_adler32_checksum(data: &[u8]) -> u32 {
     let mut a = Adler32::new();
     a.update(data);
-    return a.checksum().unwrap()
+    return a.checksum().unwrap();
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let words = [
-        "Wikipedia", "Awesome-string-baby", "This is great"
-    ];
+    let words = ["Wikipedia", "Awesome-string-baby", "This is great"];
     let mut group = c.benchmark_group("words");
     for word in words.iter() {
         let id = BenchmarkId::from_parameter(word);

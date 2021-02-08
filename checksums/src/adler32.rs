@@ -12,7 +12,6 @@ pub struct Adler32 {
 }
 
 impl Adler32 {
-
     /// Generate new Adler32 struct
     pub fn new() -> Self {
         info!("New Adler32 checksum");

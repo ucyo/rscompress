@@ -38,3 +38,14 @@ jobs:
                 toolchain: stable
                 components: clippy
             - run: cargo clippy --workspace --all-features
+    rustfmt:
+        name: Check formatting
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install rust
+              uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+                components: rustfmt
+            - run: cargo fmt --all --verbose -- --check
