@@ -20,7 +20,21 @@ jobs:
                     - { rust: nightly, os: ubuntu-latest }
         steps:
             - uses: actions/checkout@v2
-            - uses: actions-rs/toolchain@v1
+            - name: Install rust
+              uses: actions-rs/toolchain@v1
               with:
                 toolchain: ${{ matrix.rust }}
-            - run: cargo test --verbose --workspace --all-features
+            - run: cargo test --workspace --all-features
+    clippy:
+        name: Check with clippy
+        runs-on: ubuntu-latest
+        env:
+            RUSTFLAGS: -Dwarnings
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install rust
+              uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+                components: clippy
+            - run: cargo clippy --workspace --all-features
