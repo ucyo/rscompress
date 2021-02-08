@@ -1,5 +1,7 @@
 # GitHub Actions setup based on https://shift.click/blog/github-actions-rust/
 name: CI
+env:
+    RUST_BACKTRACE: 1
 on:
     pull_request:
     push:
@@ -38,7 +40,7 @@ jobs:
                 toolchain: stable
                 components: clippy
             - run: cargo clippy --workspace --all-features
-    rustfmt:
+    rust-fmt:
         name: Check formatting
         runs-on: ubuntu-latest
         steps:
@@ -49,7 +51,7 @@ jobs:
                 toolchain: stable
                 components: rustfmt
             - run: cargo fmt --all --verbose -- --check
-    codecoverage:
+    code-coverage:
         name: Generate code coverage
         runs-on: ubuntu-latest
         steps:
@@ -58,7 +60,7 @@ jobs:
               uses: actions-rs/toolchain@v1
               with:
                 toolchain: stable
-            - name: Install tarpaulin
+            - name: Install and run tarpaulin
               uses: actions-rs/tarpaulin@v0.1
               with:
-                args: --all-features
+                args: --all-features  # check if this can be extended
