@@ -1,0 +1,26 @@
+# GitHub Actions setup based on https://shift.click/blog/github-actions-rust/
+name: CI
+on:
+    pull_request:
+    push:
+        branches:
+            - "master"
+jobs:
+    test:
+        name: Test Rust ${{ matrix.rust }} on ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { rust: stable, os: macos-latest }
+                    - { rust: stable, os: windows-latest }
+                    - { rust: stable, os: ubuntu-latest }
+                    - { rust: beta, os: ubuntu-latest }
+                    - { rust: nightly, os: ubuntu-latest }
+        steps:
+            - uses: actions/checkout@v2
+            - uses: action-rs/toolchain@v1
+              with:
+                toolchain: ${{ matrix.rust }}
+            - run: cargo test --verbose --workspace --all-features
