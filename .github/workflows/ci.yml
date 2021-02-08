@@ -49,3 +49,14 @@ jobs:
                 toolchain: stable
                 components: rustfmt
             - run: cargo fmt --all --verbose -- --check
+    codecoverage:
+        name: Generate code coverage
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install rust
+              uses: actions-rs/toolchain@v1
+            - name: Install tarpaulin
+              uses: actions-rs/tarpaulin@v0.1
+              with:
+                args: --all-features
