@@ -64,3 +64,13 @@ jobs:
               uses: actions-rs/tarpaulin@v0.1
               with:
                 args: --all-features  # check if this can be extended
+    benchmark:
+        name: Benchmark code
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install rust
+              uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+            - run: cargo bench --all-features --all
