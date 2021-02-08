@@ -64,7 +64,7 @@ jobs:
             - name: Install and run tarpaulin
               uses: actions-rs/tarpaulin@v0.1
               with:
-                args: --all-features  # check if this can be extended
+                args: --all-features  --workspace --timeout 120 --out Xml # check if this can be extended
     benchmark:
         name: Benchmark code
         runs-on: ubuntu-20.04
@@ -74,4 +74,4 @@ jobs:
               uses: actions-rs/toolchain@v1
               with:
                 toolchain: stable
-            - run: cargo bench --all-features --all
+            - run: cargo bench --all-features --all --workspace
