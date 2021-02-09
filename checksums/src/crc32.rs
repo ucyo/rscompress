@@ -1,12 +1,18 @@
+//! CRC32 checksum
+//!
+//! Implementation of the CRC32 checksum algorithm as described [here](https://en.wikipedia.org/wiki/Cyclic_redundancy_check).
 use super::{Checksum, ChecksumError};
 use crc::{crc32, Hasher32};
 use log::{debug, info};
 
+/// CRC32 struct to save inner Digest element from `crc32` crate
 pub struct CRC32 {
     a: crc32::Digest,
 }
 
 impl CRC32 {
+
+    /// Generate new CRC32 struct
     pub fn new() -> Self {
         info!("New CRC32 checksum created");
         CRC32 {
@@ -15,12 +21,14 @@ impl CRC32 {
     }
 }
 
+/// Use the new function for generating the default implementation
 impl Default for CRC32 {
     fn default() -> Self {
         Self::new()
     }
 }
 
+/// Implementation of the Checksum trait for CRC32
 impl Checksum for CRC32 {
     fn update(&mut self, data: &[u8]) -> Option<usize> {
         debug!("Update checksum using bytes of length {}", data.len());

@@ -4,11 +4,11 @@
 //! checksums can be added to the compressed data.
 //! This can then be used to check up if the deconstructed data is the same
 //! as the original data.
+use std::error::Error;
+use std::fmt;
 
 mod adler32;
 mod crc32;
-use std::error::Error;
-use std::fmt;
 
 pub use adler32::Adler32;
 pub use crc32::CRC32;
