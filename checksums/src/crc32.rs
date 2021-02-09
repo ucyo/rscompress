@@ -1,5 +1,6 @@
 use super::{Checksum, ChecksumError};
 use crc::{crc32, Hasher32};
+use log::{info, debug};
 
 pub struct CRC32 {
     a: crc32::Digest,
@@ -7,17 +8,20 @@ pub struct CRC32 {
 
 impl CRC32 {
     pub fn new() -> Self {
+        info!("New CRC32 checksum created");
         CRC32 { a: crc32::Digest::new(crc32::IEEE) }
     }
 }
 
 impl Checksum for CRC32 {
     fn update(&mut self, data: &[u8]) -> Option<usize> {
+        debug!("Update checksum using bytes of length {}", data.len());
         self.a.write(data);
         Some(data.len())
     }
     fn checksum(&self) -> Result<u32, ChecksumError> {
         let c = self.a.sum32();
+        debug!("Checksum is {}", c);
         Ok(c)
     }
 }
