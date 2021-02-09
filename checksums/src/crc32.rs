@@ -11,7 +11,6 @@ pub struct CRC32 {
 }
 
 impl CRC32 {
-
     /// Generate new CRC32 struct
     pub fn new() -> Self {
         info!("New CRC32 checksum created");
