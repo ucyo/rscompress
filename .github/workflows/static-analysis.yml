@@ -1,0 +1,34 @@
+# GitHub Actions setup based on https://shift.click/blog/github-actions-rust/
+name: Static Analysis
+env:
+    RUST_BACKTRACE: 1
+on:
+    pull_request:
+    push:
+        branches:
+            - "master"
+jobs:
+    clippy:
+        name: Check with clippy
+        runs-on: ubuntu-20.04
+        env:
+            RUSTFLAGS: -Dwarnings
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install rust
+              uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+                components: clippy
+            - run: cargo clippy --workspace --all-features
+    rust-fmt:
+        name: Check formatting
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install rust
+              uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+                components: rustfmt
+            - run: cargo fmt --all --verbose -- --check

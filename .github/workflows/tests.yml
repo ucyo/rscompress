@@ -1,5 +1,5 @@
 # GitHub Actions setup based on https://shift.click/blog/github-actions-rust/
-name: CI
+name: Tests and Code Coverage
 env:
     RUST_BACKTRACE: 1
 on:
@@ -28,30 +28,6 @@ jobs:
               with:
                 toolchain: ${{ matrix.rust }}
             - run: cargo test --workspace --all-features
-    clippy:
-        name: Check with clippy
-        runs-on: ubuntu-20.04
-        env:
-            RUSTFLAGS: -Dwarnings
-        steps:
-            - uses: actions/checkout@v2
-            - name: Install rust
-              uses: actions-rs/toolchain@v1
-              with:
-                toolchain: stable
-                components: clippy
-            - run: cargo clippy --workspace --all-features
-    rust-fmt:
-        name: Check formatting
-        runs-on: ubuntu-20.04
-        steps:
-            - uses: actions/checkout@v2
-            - name: Install rust
-              uses: actions-rs/toolchain@v1
-              with:
-                toolchain: stable
-                components: rustfmt
-            - run: cargo fmt --all --verbose -- --check
     code-coverage:
         name: Generate code coverage
         runs-on: ubuntu-20.04
@@ -65,13 +41,3 @@ jobs:
               uses: actions-rs/tarpaulin@v0.1
               with:
                 args: --all-features  --workspace --timeout 120 --out Xml # check if this can be extended
-    benchmark:
-        name: Benchmark code
-        runs-on: ubuntu-20.04
-        steps:
-            - uses: actions/checkout@v2
-            - name: Install rust
-              uses: actions-rs/toolchain@v1
-              with:
-                toolchain: stable
-            - run: cargo bench --all-features --all --workspace

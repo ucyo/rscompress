@@ -1,0 +1,20 @@
+# GitHub Actions setup based on https://shift.click/blog/github-actions-rust/
+name: Performance Benchmarks
+env:
+    RUST_BACKTRACE: 1
+on:
+    pull_request:
+    push:
+        branches:
+            - "master"
+jobs:
+    benchmark:
+        name: Benchmark code
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install rust
+              uses: actions-rs/toolchain@v1
+              with:
+                toolchain: stable
+            - run: cargo bench --all-features --all --workspace
