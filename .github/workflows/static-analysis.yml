@@ -31,4 +31,4 @@ jobs:
               with:
                 toolchain: stable
                 components: rustfmt
-            - run: cargo fmt --workspace --verbose -- --check
+            - run: cargo fmt --all --verbose -- --check
