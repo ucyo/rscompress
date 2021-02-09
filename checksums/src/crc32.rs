@@ -10,6 +10,10 @@ impl CRC32 {
     pub fn new() -> Self {
         info!("New CRC32 checksum created");
         CRC32 { a: crc32::Digest::new(crc32::IEEE) }
+
+impl Default for CRC32 {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
