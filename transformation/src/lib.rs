@@ -17,3 +17,17 @@ macro_rules! test_transform {
         }
     };
 }
+
+
+#[macro_export]
+macro_rules! test_reverse {
+    ($func_name:ident, $method:ident, $input:expr, $expected:expr) => {
+        #[test]
+        fn $func_name() {
+            let mut rl = $method::new();
+            let result = rl.reverse(&$input).unwrap();
+
+            assert_eq!(result, $expected)
+        }
+    };
+}
