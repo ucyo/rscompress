@@ -37,7 +37,19 @@ impl Transform for RunLength {
         Some(result)
     }
     fn reverse(&mut self, source: &[u8]) -> Option<Vec<u8>> {
-        todo!()
+        let mut result: Vec<u8> = Vec::with_capacity(source.len());
+        for byte in source.iter() {
+            if self.current.is_some() && *byte == RUN_BYTE_CODE {
+                result.push(self.current.unwrap());
+            } else if self.current.is_some() && *byte == self.current.unwrap() {
+                result.push(RUN_BYTE_CODE);
+                self.current = Some(RUN_BYTE_CODE);
+            } else {
+                result.push(*byte);
+                self.current = Some(*byte);
+            }
+        }
+        Some(result)
     }
 }
 
@@ -45,10 +57,18 @@ impl Transform for RunLength {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_transform;
+    use crate::{test_transform, test_reverse};
 
     test_transform!(rlt_easy, RunLength,
         vec![8, 2, 2, 2, 24, 32, 32, 1, 24],
         vec![8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24]);
+
+    test_reverse!(rlt_easy_reverse, RunLength,
+        vec![8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24],
+        vec![8, 2, 2, 2, 24, 32, 32, 1, 24]);
+
+    test_reverse!(rlt_reverse, RunLength,
+        vec![8, RUN_BYTE_CODE, RUN_BYTE_CODE, 8],
+        vec![8, 8, 8, 0]);
 
 }
