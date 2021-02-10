@@ -4,13 +4,12 @@ const RUN_BYTE_CODE: u8 = 0;
 
 #[derive(Debug)]
 struct RunLength {
-    current: u8,
-    // running: bool,
+    current: Option<u8>,
 }
 
 impl RunLength {
     pub fn new() -> Self {
-        RunLength { current: 0 }
+        RunLength { current: None }
     }
 }
 
@@ -25,18 +24,14 @@ impl Transform for RunLength {
     fn transform(&mut self, source: &[u8]) -> Option<Vec<u8>> {
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
-            if self.current == *byte {
+            if self.current.is_some() && self.current.unwrap() == *byte {
                 result.push(RUN_BYTE_CODE);
-                // self.running = true;
-                // running: bool,
-            } else if RUN_BYTE_CODE == *byte {
-                result.push(self.current);
-                self.current = *byte;
-                // self.running = false;
+            } else if self.current.is_some() && RUN_BYTE_CODE == *byte {
+                result.push(self.current.unwrap());
+                self.current = Some(*byte);
             } else {
                 result.push(*byte);
-                self.current = *byte;
-                // self.running = true;
+                self.current = Some(*byte);
             }
         }
         Some(result)
