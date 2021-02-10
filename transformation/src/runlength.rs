@@ -37,6 +37,8 @@ impl Transform for RunLength {
         }
         Some(result)
     }
+
+    // TODO: There is a problem if the last value in the data is the same as the first one.
     fn reverse(&mut self, source: &[u8]) -> Option<Vec<u8>> {
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
@@ -44,6 +46,7 @@ impl Transform for RunLength {
             if self.current.is_some() && *byte == RUN_BYTE_CODE {
                 result.push(self.current.unwrap());
             } else if self.current.is_some() && *byte == self.current.unwrap() {
+                // This case must recognise that it is not the first one called in reverse case
                 result.push(RUN_BYTE_CODE);
                 self.current = Some(RUN_BYTE_CODE);
             } else {
