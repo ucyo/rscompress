@@ -2,7 +2,7 @@ mod runlength;
 
 pub trait Transform {
     fn transform(&mut self, source: &[u8]) -> Option<Vec<u8>>;
-    fn rtransform(&mut self, source: &[u8]) -> Option<Vec<u8>>;
+    fn reverse(&mut self, source: &[u8]) -> Option<Vec<u8>>;
 }
 
 #[macro_export]

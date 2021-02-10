@@ -41,7 +41,7 @@ impl Transform for RunLength {
         }
         Some(result)
     }
-    fn rtransform(&mut self, source: &[u8]) -> Option<Vec<u8>> {
+    fn reverse(&mut self, source: &[u8]) -> Option<Vec<u8>> {
         todo!()
     }
 }
@@ -51,16 +51,6 @@ impl Transform for RunLength {
 mod tests {
     use super::*;
     use crate::test_transform;
-
-    #[test]
-    fn test_rlt_transform() {
-        let data = vec![8, 2, 2, 2, 24, 32, 32, 1, 24];
-        let expected = vec![8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24];
-        let mut rl = RunLength::new();
-        let result = rl.transform(&data).unwrap();
-
-        assert_eq!(result, expected)
-    }
 
     test_transform!(rlt_easy, RunLength,
         vec![8, 2, 2, 2, 24, 32, 32, 1, 24],
