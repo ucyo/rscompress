@@ -1,7 +1,7 @@
 use crate::Transform;
 use log::info;
 
-const RUN_BYTE_CODE: u8 = 0;
+const RUN_BYTE_CODE: u8 = 0; // TODO: Changing this from 0 to random number breaks tests
 
 #[derive(Debug)]
 struct RunLength {
