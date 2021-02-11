@@ -1,6 +1,6 @@
 [package]
 name = "rscompress-checksums"
-version = "0.1.2"
+version = "0.2"
 authors = ["ucyo <cayoglu@me.com>"]
 edition = "2018"
 license = "MIT"
