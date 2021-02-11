@@ -1,6 +1,6 @@
 [package]
 name = "rscompress"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["ucyo <cayoglu@me.com>"]
 edition = "2018"
 license = "MIT"
@@ -12,7 +12,7 @@ repository = "https://github.com/ucyo/rscompress/"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rscompress-transformation = {version = "0.1.*", path = "../transformation"}
+rscompress-transformation = {version = "0.2.*", path = "../transformation"}
 rscompress-approximation = {version = "0.1.*", path = "../approximation"}
 rscompress-coding = {version = "0.1.*", path = "../coding"}
-rscompress-checksums = {version = "0.1.*", path = "../checksums"}
+rscompress-checksums = {version = "0.2.*", path = "../checksums"}
