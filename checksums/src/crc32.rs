@@ -44,9 +44,12 @@ impl Checksum for CRC32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_checksum;
+    use crate::tests::checksum;
 
-    test_checksum!(test_wikipedia, CRC32, "Wikipedia", 0xadaac02e);
-    test_checksum!(test_awesome, CRC32, "Awesome-string-baby", 0x7900b113);
-    test_checksum!(test_greatness, CRC32, "This is great", 0xc6314444);
+    #[test]
+    fn test_words() {
+        checksum::<CRC32>("Wikipedia".as_bytes(), 0xadaac02e);
+        checksum::<CRC32>( "Awesome-string-baby".as_bytes(), 0x7900b113);
+        checksum::<CRC32>( "This is great".as_bytes(), 0xc6314444);
+    }
 }

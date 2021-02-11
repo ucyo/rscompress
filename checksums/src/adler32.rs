@@ -5,7 +5,7 @@ use super::{Checksum, ChecksumError};
 use log::{debug, info};
 
 /// Adler32 struct to save normal and aggregated sum
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Adler32 {
     a: u16,
     b: u16,
@@ -16,6 +16,13 @@ impl Adler32 {
     pub fn new() -> Self {
         info!("New Adler32 checksum");
         Adler32 { a: 1, b: 0 }
+    }
+}
+
+/// Use the new function for generating the default implementation
+impl Default for Adler32 {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -39,9 +46,12 @@ impl Checksum for Adler32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_checksum;
+    use crate::tests::checksum;
 
-    test_checksum!(test_wikipedia, Adler32, "Wikipedia", 0x11E60398);
-    test_checksum!(test_awesome, Adler32, "Awesome-string-baby", 0x49D50761);
-    test_checksum!(test_greatness, Adler32, "This is great", 0x20AF04C8);
+    #[test]
+    fn test_words() {
+        checksum::<Adler32>("Wikipedia".as_bytes(), 0x11E60398);
+        checksum::<Adler32>("Awesome-string-baby".as_bytes(), 0x49D50761);
+        checksum::<Adler32>("This is great".as_bytes(), 0x20AF04C8);
+    }
 }

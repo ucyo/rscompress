@@ -46,15 +46,17 @@ impl fmt::Display for ChecksumError {
     }
 }
 
-#[macro_export]
-macro_rules! test_checksum {
-    ($func_name:ident, $method:ident, $test_string:expr, $expected:expr) => {
-        #[test]
-        fn $func_name() {
-            let mut a = $method::new();
-            let data = $test_string.as_bytes();
-            a.update(&data);
-            assert_eq!(a.checksum().unwrap(), $expected)
-        }
-    };
+#[cfg(test)]
+#[allow(dead_code)]
+pub mod tests {
+    //! # Tests
+    //! This module defines helper functions for testing checksum algorithms.
+    use crate::Checksum;
+
+    /// Helper function for calculating checksum
+    pub fn checksum<M: Checksum + Default>(input: &[u8], expected: u32) {
+        let mut model: M = Default::default();
+        model.update(&input);
+        assert_eq!(model.checksum().unwrap(), expected)
+    }
 }
