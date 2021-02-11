@@ -6,12 +6,37 @@
 //! The transformation algorithms implemented in this crate are all reversible.
 //! The original order of the data can be reproduced by using the `reverse` operation
 //! defined by the `Transform` Trait.
+use std::fmt;
+use std::{error::Error, fmt::Display};
 mod runlength;
 
 /// Trait for calculating transformations on byte level
 pub trait Transform {
-    fn transform(&mut self, source: &[u8]) -> Option<Vec<u8>>;
-    fn reverse(&mut self, source: &[u8]) -> Option<Vec<u8>>;
+    fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError>;
+    fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError>;
+}
+
+/// An enum representing possible errors during transformation
+#[derive(Debug)]
+pub enum TransformError {
+    /// Buffer is empty
+    EmptyBufferError,
+}
+
+impl Error for TransformError {
+    fn description(&self) -> &str {
+        match *self {
+            TransformError::EmptyBufferError => "Buffer is empty",
+        }
+    }
+}
+
+impl Display for TransformError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match *self {
+            TransformError::EmptyBufferError => write!(f, "Can not read because buffer is empty"),
+        }
+    }
 }
 
 #[cfg(test)]
