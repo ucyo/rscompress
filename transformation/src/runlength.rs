@@ -1,8 +1,13 @@
+//! Run-length Transformation
+//!
+//! Implementation of a run-length transformation as
+//! described [here](https://sites.google.com/site/datacompressionguide/rlt).
 use crate::{Transform, TransformError};
 use log::info;
 
 const RUN_BYTE_CODE: u8 = 0;
 
+/// Run-length struct to sace current byte and metainformation about special cases
 #[derive(Debug)]
 struct RunLength {
     current: Option<u8>,
@@ -24,6 +29,7 @@ impl Default for RunLength {
     }
 }
 
+/// Implementation of the Transform trait for Run-Length
 impl Transform for RunLength {
     fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
         if source.is_empty() {
