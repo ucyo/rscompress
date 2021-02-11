@@ -10,6 +10,8 @@ use std::fmt;
 use std::{error::Error, fmt::Display};
 mod runlength;
 
+pub use runlength::RunLength;
+
 /// Trait for calculating transformations on byte level
 pub trait Transform {
     fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError>;
