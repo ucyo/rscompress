@@ -4,7 +4,7 @@ const ALPHABET_SIZE: u8 = 255; // + 1 number of elements
 
 #[derive(Debug)]
 pub struct MoveToFront {
-    table: Vec<u8>
+    table: Vec<u8>,
 }
 
 impl MoveToFront {
@@ -39,7 +39,6 @@ impl Transform for MoveToFront {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -47,9 +46,6 @@ mod tests {
 
     #[test]
     fn test_easy_transforms() {
-        transform::<MoveToFront>(
-            "bananaaa".as_bytes(),
-            &[99, 99, 111, 2, 2, 2, 1, 1],
-        );
+        transform::<MoveToFront>("bananaaa".as_bytes(), &[99, 99, 111, 2, 2, 2, 1, 1]);
     }
 }

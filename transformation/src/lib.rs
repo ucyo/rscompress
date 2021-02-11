@@ -8,11 +8,11 @@
 //! defined by the `Transform` Trait.
 use std::fmt;
 use std::{error::Error, fmt::Display};
-mod runlength;
 mod movetofront;
+mod runlength;
 
-pub use runlength::RunLength;
 pub use movetofront::MoveToFront;
+pub use runlength::RunLength;
 
 /// Trait for calculating transformations on byte level
 pub trait Transform {
