@@ -42,9 +42,7 @@ impl Transform for RunLength {
                 self.current = Some(*byte);
             }
         }
-        if !result.is_empty() {
-            self.reverse_started = false;
-        }
+        self.reverse_started = false;
         Ok(result)
     }
 
