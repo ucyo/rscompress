@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main};
-use criterion::{BenchmarkId, Criterion};
+use criterion::{BenchmarkId, Criterion, Throughput};
 use rscompress_transformation::{RunLength, Transform};
 use rand::{rngs::OsRng, RngCore};
 
@@ -23,11 +23,16 @@ fn generate_random_data(size: usize) -> Vec<u8> {
 }
 
 fn criterion_transform(c: &mut Criterion) {
-    let data = generate_random_data(DATA_SIZE);
-    let id = BenchmarkId::new("transform", data.len());
-    c.bench_with_input(id, &data, |b, s| {
-        b.iter(|| do_transformation::<RunLength>(s))
-    });
+    let mut group = c.benchmark_group("transform");
+    let factors: [usize; 5] = [2, 4, 8, 16, 24];
+    for factor in factors.iter() {
+        let size = factor * DATA_SIZE;
+        let data = generate_random_data(size);
+        group.throughput(Throughput::Bytes((factor * DATA_SIZE) as u64));
+        group.bench_with_input(BenchmarkId::from_parameter(size), data.as_slice(), |b, s| {
+            b.iter(|| do_transformation::<RunLength>(s));
+        });
+    }
 }
 
 fn criterion_reverse(c: &mut Criterion) {
