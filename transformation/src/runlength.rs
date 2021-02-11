@@ -67,24 +67,25 @@ impl Transform for RunLength {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{test_transform, test_reverse, test_roundtrip};
+    use crate::tests::{transform, reverse, roundtrip};
 
-    test_transform!(rlt_easy, RunLength,
-        vec![8, 2, 2, 2, 24, 32, 32, 1, 24],
-        vec![8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24]);
+    #[test]
+    fn test_easy_transforms() {
+        transform::<RunLength>(&[8, 2, 2, 2, 24, 32, 32, 1, 24], &[8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24]);
+    }
+    #[test]
+    fn test_easy_reverses() {
+        reverse::<RunLength>(&[8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24], &[8, 2, 2, 2, 24, 32, 32, 1, 24]);
+        reverse::<RunLength>(&[8, RUN_BYTE_CODE, RUN_BYTE_CODE, 8], &[8, 8, 8, 0]);
+    }
 
-    test_reverse!(rlt_easy_reverse, RunLength,
-        vec![8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24],
-        vec![8, 2, 2, 2, 24, 32, 32, 1, 24]);
-
-    test_reverse!(rlt_reverse, RunLength,
-        vec![8, RUN_BYTE_CODE, RUN_BYTE_CODE, 8],
-        vec![8, 8, 8, 0]);
-
-    test_roundtrip!(rlt_easy_round, RunLength, vec![8, 2, 2, 2, 24, 32, 32, 1, 24]);
-    test_roundtrip!(rlt_round_ending, RunLength, vec![8, 8, 8, 8, 2]);
-    test_roundtrip!(rlt_round_ending2, RunLength, vec![8, 8, 1, 2, 2]);
-    test_roundtrip!(rlt_round_ending3, RunLength, vec![8, 8, 8, 8]);
-    test_roundtrip!(rlt_round_ending4, RunLength, vec![8, 1, 5, 8]);
+    #[test]
+    fn test_roundtrip() {
+        roundtrip::<RunLength>(&[8, 2, 2, 2, 24, 32, 32, 1, 24]);
+        roundtrip::<RunLength>(&[8, 8, 8, 8, 2]);
+        roundtrip::<RunLength>(&[8, 8, 1, 2, 2]);
+        roundtrip::<RunLength>(&[8, 8, 8, 8]);
+        roundtrip::<RunLength>(&[8, 1, 5, 8]);
+    }
 
 }

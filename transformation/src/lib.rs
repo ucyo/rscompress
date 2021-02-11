@@ -5,43 +5,28 @@ pub trait Transform {
     fn reverse(&mut self, source: &[u8]) -> Option<Vec<u8>>;
 }
 
-#[macro_export]
-macro_rules! test_transform {
-    ($func_name:ident, $method:ident, $input:expr, $expected:expr) => {
-        #[test]
-        fn $func_name() {
-            let mut rl = $method::new();
-            let result = rl.transform(&$input).unwrap();
+#[cfg(test)]
+#[allow(dead_code)]
+mod tests {
+    use crate::Transform;
 
-            assert_eq!(result, $expected)
-        }
-    };
-}
+    pub fn transform<M: Transform+Default>(input: &[u8], expected: &[u8]) {
+        let mut model: M = Default::default();
+        let result = model.transform(&input).unwrap();
+        assert_eq!(result, expected)
+    }
 
+    pub fn reverse<M: Transform+Default>(input: &[u8], expected: &[u8]) {
+        let mut model: M = Default::default();
+        let result = model.reverse(&input).unwrap();
+        assert_eq!(result, expected)
+    }
 
-#[macro_export]
-macro_rules! test_reverse {
-    ($func_name:ident, $method:ident, $input:expr, $expected:expr) => {
-        #[test]
-        fn $func_name() {
-            let mut rl = $method::new();
-            let result = rl.reverse(&$input).unwrap();
+    pub fn roundtrip<M: Transform+Default>(input: &[u8]) {
+        let mut model: M = Default::default();
+        let tmp = model.transform(&input).unwrap();
+        let result = model.reverse(&tmp).unwrap();
+        assert_eq!(result, input)
+    }
 
-            assert_eq!(result, $expected)
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! test_roundtrip {
-    ($func_name:ident, $method:ident, $input:expr) => {
-        #[test]
-        fn $func_name() {
-            let mut rl = $method::new();
-            let tmp = rl.transform(&$input).unwrap();
-            let result = rl.reverse(&tmp).unwrap();
-
-            assert_eq!(result, $input)
-        }
-    };
 }
