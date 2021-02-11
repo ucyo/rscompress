@@ -1,7 +1,7 @@
 use crate::Transform;
 use log::info;
 
-const RUN_BYTE_CODE: u8 = 0; // TODO: Changing this from 0 to random number breaks tests
+const RUN_BYTE_CODE: u8 = 0;
 
 #[derive(Debug)]
 struct RunLength {
@@ -77,7 +77,7 @@ mod tests {
     #[test]
     fn test_easy_reverses() {
         reverse::<RunLength>(&[8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24], &[8, 2, 2, 2, 24, 32, 32, 1, 24]);
-        reverse::<RunLength>(&[8, RUN_BYTE_CODE, RUN_BYTE_CODE, 8], &[8, 8, 8, 0]);
+        reverse::<RunLength>(&[8, RUN_BYTE_CODE, RUN_BYTE_CODE, 8], &[8, 8, 8, RUN_BYTE_CODE]);
     }
 
     #[test]
