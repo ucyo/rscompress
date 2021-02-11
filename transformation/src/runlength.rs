@@ -9,7 +9,7 @@ const RUN_BYTE_CODE: u8 = 0;
 
 /// Run-length struct to sace current byte and metainformation about special cases
 #[derive(Debug)]
-struct RunLength {
+pub struct RunLength {
     current: Option<u8>,
     reverse_started: bool,
 }
