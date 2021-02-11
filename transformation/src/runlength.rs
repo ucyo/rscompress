@@ -47,7 +47,7 @@ impl Transform for RunLength {
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
             info!("Reverse: {} | {:?}", byte, self);
-            if self.current.is_some() && *byte == RUN_BYTE_CODE {
+            if self.current.is_some() && *byte == RUN_BYTE_CODE && self.reverse_started {
                 result.push(self.current.unwrap());
                 self.reverse_started = true;
             } else if self.current.is_some() && *byte == self.current.unwrap() && self.reverse_started {
@@ -86,7 +86,7 @@ mod tests {
         roundtrip::<RunLength>(&[8, 8, 8, 8, 2]);
         roundtrip::<RunLength>(&[8, 8, 1, 2, 2]);
         roundtrip::<RunLength>(&[8, 8, 8, 8]);
-        roundtrip::<RunLength>(&[RUN_BYTE_CODE, 8, 8, 8]); //TODO: Problem if starting random number is RUN_BYTE_CODE
+        roundtrip::<RunLength>(&[RUN_BYTE_CODE, 8, 8, 8]);
         roundtrip::<RunLength>(&[8, 1, 5, 8]);
     }
 
