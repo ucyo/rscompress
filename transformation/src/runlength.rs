@@ -11,7 +11,10 @@ struct RunLength {
 
 impl RunLength {
     pub fn new() -> Self {
-        RunLength { current: None, reverse_started: false }
+        RunLength {
+            current: None,
+            reverse_started: false,
+        }
     }
 }
 
@@ -20,7 +23,6 @@ impl Default for RunLength {
         Self::new()
     }
 }
-
 
 impl Transform for RunLength {
     fn transform(&mut self, source: &[u8]) -> Option<Vec<u8>> {
@@ -50,7 +52,10 @@ impl Transform for RunLength {
             if self.current.is_some() && *byte == RUN_BYTE_CODE && self.reverse_started {
                 result.push(self.current.unwrap());
                 self.reverse_started = true;
-            } else if self.current.is_some() && *byte == self.current.unwrap() && self.reverse_started {
+            } else if self.current.is_some()
+                && *byte == self.current.unwrap()
+                && self.reverse_started
+            {
                 result.push(RUN_BYTE_CODE);
                 self.current = Some(RUN_BYTE_CODE);
                 self.reverse_started = true;
@@ -64,20 +69,48 @@ impl Transform for RunLength {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::{transform, reverse, roundtrip, random_roundtrip};
+    use crate::tests::{random_roundtrip, reverse, roundtrip, transform};
 
     #[test]
     fn test_easy_transforms() {
-        transform::<RunLength>(&[8, 2, 2, 2, 24, 32, 32, 1, 24], &[8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24]);
+        transform::<RunLength>(
+            &[8, 2, 2, 2, 24, 32, 32, 1, 24],
+            &[
+                8,
+                2,
+                RUN_BYTE_CODE,
+                RUN_BYTE_CODE,
+                24,
+                32,
+                RUN_BYTE_CODE,
+                1,
+                24,
+            ],
+        );
     }
     #[test]
     fn test_easy_reverses() {
-        reverse::<RunLength>(&[8, 2, RUN_BYTE_CODE, RUN_BYTE_CODE, 24, 32, RUN_BYTE_CODE, 1, 24], &[8, 2, 2, 2, 24, 32, 32, 1, 24]);
-        reverse::<RunLength>(&[8, RUN_BYTE_CODE, RUN_BYTE_CODE, 8], &[8, 8, 8, RUN_BYTE_CODE]);
+        reverse::<RunLength>(
+            &[
+                8,
+                2,
+                RUN_BYTE_CODE,
+                RUN_BYTE_CODE,
+                24,
+                32,
+                RUN_BYTE_CODE,
+                1,
+                24,
+            ],
+            &[8, 2, 2, 2, 24, 32, 32, 1, 24],
+        );
+        reverse::<RunLength>(
+            &[8, RUN_BYTE_CODE, RUN_BYTE_CODE, 8],
+            &[8, 8, 8, RUN_BYTE_CODE],
+        );
     }
 
     #[test]
@@ -98,5 +131,4 @@ mod tests {
         random_roundtrip::<RunLength>(100);
         random_roundtrip::<RunLength>(100);
     }
-
 }
