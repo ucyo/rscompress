@@ -37,7 +37,9 @@ mod tests {
             let mut model: M = Default::default();
             let tmp = model.transform(&input).unwrap();
             let result = model.reverse(&tmp).unwrap();
-            print!("Input: {:?}", input);
+            if result != input {
+                print!("Input: {:?}", input);
+            }
             assert_eq!(result, input)
         }
     }
