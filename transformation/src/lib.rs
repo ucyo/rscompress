@@ -9,6 +9,7 @@ pub trait Transform {
 #[allow(dead_code)]
 mod tests {
     use crate::Transform;
+    use rand::{RngCore, rngs::OsRng};
 
     pub fn transform<M: Transform+Default>(input: &[u8], expected: &[u8]) {
         let mut model: M = Default::default();
@@ -27,6 +28,18 @@ mod tests {
         let tmp = model.transform(&input).unwrap();
         let result = model.reverse(&tmp).unwrap();
         assert_eq!(result, input)
+    }
+
+    pub fn random_roundtrip<M: Transform+Default>(trips: usize) {
+        for _ in 0..trips {
+            let mut input = [0u8; 25];
+            OsRng.fill_bytes(&mut input);
+            let mut model: M = Default::default();
+            let tmp = model.transform(&input).unwrap();
+            let result = model.reverse(&tmp).unwrap();
+            print!("Input: {:?}", input);
+            assert_eq!(result, input)
+        }
     }
 
 }

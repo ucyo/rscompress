@@ -68,7 +68,7 @@ impl Transform for RunLength {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::{transform, reverse, roundtrip};
+    use crate::tests::{transform, reverse, roundtrip, random_roundtrip};
 
     #[test]
     fn test_easy_transforms() {
@@ -86,7 +86,17 @@ mod tests {
         roundtrip::<RunLength>(&[8, 8, 8, 8, 2]);
         roundtrip::<RunLength>(&[8, 8, 1, 2, 2]);
         roundtrip::<RunLength>(&[8, 8, 8, 8]);
+        roundtrip::<RunLength>(&[RUN_BYTE_CODE, 8, 8, 8]); //TODO: Problem if starting random number is RUN_BYTE_CODE
         roundtrip::<RunLength>(&[8, 1, 5, 8]);
+    }
+
+    #[test]
+    fn test_random_roundtrip() {
+        random_roundtrip::<RunLength>(100);
+        random_roundtrip::<RunLength>(100);
+        random_roundtrip::<RunLength>(100);
+        random_roundtrip::<RunLength>(100);
+        random_roundtrip::<RunLength>(100);
     }
 
 }
