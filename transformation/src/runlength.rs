@@ -1,4 +1,4 @@
-use crate::Transform;
+use crate::{Transform, TransformError};
 use log::info;
 
 const RUN_BYTE_CODE: u8 = 0;
@@ -25,7 +25,10 @@ impl Default for RunLength {
 }
 
 impl Transform for RunLength {
-    fn transform(&mut self, source: &[u8]) -> Option<Vec<u8>> {
+    fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
+        if source.is_empty() {
+            return Err(TransformError::EmptyBufferError);
+        }
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
             info!("Transform: {} | {:?}", byte, self);
@@ -42,10 +45,13 @@ impl Transform for RunLength {
         if result.len() > 0 {
             self.reverse_started = false;
         }
-        Some(result)
+        Ok(result)
     }
 
-    fn reverse(&mut self, source: &[u8]) -> Option<Vec<u8>> {
+    fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
+        if source.is_empty() {
+            return Err(TransformError::EmptyBufferError);
+        }
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
             info!("Reverse: {} | {:?}", byte, self);
@@ -65,7 +71,7 @@ impl Transform for RunLength {
                 self.reverse_started = true;
             }
         }
-        Some(result)
+        Ok(result)
     }
 }
 
