@@ -5,11 +5,12 @@ const RUN_BYTE_CODE: u8 = 0;
 #[derive(Debug)]
 struct RunLength {
     current: Option<u8>,
+    reverse_started: bool,
 }
 
 impl RunLength {
     pub fn new() -> Self {
-        RunLength { current: None }
+        RunLength { current: None, reverse_started: false }
     }
 }
 
@@ -35,23 +36,27 @@ impl Transform for RunLength {
                 self.current = Some(*byte);
             }
         }
+        if result.len() > 0 {
+            self.reverse_started = false;
+        }
         Some(result)
     }
 
-    // TODO: There is a problem if the last value in the data is the same as the first one.
     fn reverse(&mut self, source: &[u8]) -> Option<Vec<u8>> {
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
             println!("Reverse: {} | {:?}", byte, self);
             if self.current.is_some() && *byte == RUN_BYTE_CODE {
                 result.push(self.current.unwrap());
-            } else if self.current.is_some() && *byte == self.current.unwrap() {
-                // This case must recognise that it is not the first one called in reverse case
+                self.reverse_started = true;
+            } else if self.current.is_some() && *byte == self.current.unwrap() && self.reverse_started {
                 result.push(RUN_BYTE_CODE);
                 self.current = Some(RUN_BYTE_CODE);
+                self.reverse_started = true;
             } else {
                 result.push(*byte);
                 self.current = Some(*byte);
+                self.reverse_started = true;
             }
         }
         Some(result)
