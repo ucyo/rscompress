@@ -9,28 +9,28 @@ pub trait Transform {
 #[allow(dead_code)]
 mod tests {
     use crate::Transform;
-    use rand::{RngCore, rngs::OsRng};
+    use rand::{rngs::OsRng, RngCore};
 
-    pub fn transform<M: Transform+Default>(input: &[u8], expected: &[u8]) {
+    pub fn transform<M: Transform + Default>(input: &[u8], expected: &[u8]) {
         let mut model: M = Default::default();
         let result = model.transform(&input).unwrap();
         assert_eq!(result, expected)
     }
 
-    pub fn reverse<M: Transform+Default>(input: &[u8], expected: &[u8]) {
+    pub fn reverse<M: Transform + Default>(input: &[u8], expected: &[u8]) {
         let mut model: M = Default::default();
         let result = model.reverse(&input).unwrap();
         assert_eq!(result, expected)
     }
 
-    pub fn roundtrip<M: Transform+Default>(input: &[u8]) {
+    pub fn roundtrip<M: Transform + Default>(input: &[u8]) {
         let mut model: M = Default::default();
         let tmp = model.transform(&input).unwrap();
         let result = model.reverse(&tmp).unwrap();
         assert_eq!(result, input)
     }
 
-    pub fn random_roundtrip<M: Transform+Default>(trips: usize) {
+    pub fn random_roundtrip<M: Transform + Default>(trips: usize) {
         for _ in 0..trips {
             let mut input = [0u8; 10_000];
             OsRng.fill_bytes(&mut input);
@@ -43,5 +43,4 @@ mod tests {
             assert_eq!(result, input)
         }
     }
-
 }
