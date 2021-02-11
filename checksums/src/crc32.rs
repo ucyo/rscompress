@@ -49,7 +49,7 @@ mod tests {
     #[test]
     fn test_words() {
         checksum::<CRC32>("Wikipedia".as_bytes(), 0xadaac02e);
-        checksum::<CRC32>( "Awesome-string-baby".as_bytes(), 0x7900b113);
-        checksum::<CRC32>( "This is great".as_bytes(), 0xc6314444);
+        checksum::<CRC32>("Awesome-string-baby".as_bytes(), 0x7900b113);
+        checksum::<CRC32>("This is great".as_bytes(), 0xc6314444);
     }
 }

@@ -1,27 +1,41 @@
 use criterion::{criterion_group, criterion_main};
-use criterion::{BenchmarkId, Criterion};
+use criterion::{BenchmarkId, Criterion, Throughput};
+use rand::{rngs::OsRng, RngCore};
 use rscompress_checksums::{Adler32, Checksum, CRC32};
 
-fn do_checksum_checks(data: &[u8], model: &mut impl Checksum) -> u32 {
-    model.update(data);
-    return model.checksum().unwrap();
+const DATA_SIZE: usize = 10_000;
+const FACTORS: [usize; 5] = [2, 4, 8, 16, 32];
+
+fn do_checksum<M: Checksum + Default>(data: &[u8]) -> u32 {
+    let mut model: M = Default::default();
+    model.update(&data);
+    model.checksum().unwrap()
+}
+
+fn generate_random_data(size: usize) -> Vec<u8> {
+    let mut data = vec![0u8; size];
+    OsRng.fill_bytes(&mut data);
+    data
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let words = ["Wikipedia", "Awesome-string-baby", "This is great"];
-    let mut group = c.benchmark_group("words");
-    for word in words.iter() {
-        let id = BenchmarkId::new("Adler32", word);
-        let mut model = Adler32::new();
-        group.bench_with_input(id, &word.as_bytes(), |b, &s| {
-            b.iter(|| do_checksum_checks(s, &mut model));
-        });
-        let id = BenchmarkId::new("CRC32", word);
-        let mut model = CRC32::new();
-        group.bench_with_input(id, &word.as_bytes(), |b, &s| {
-            b.iter(|| do_checksum_checks(s, &mut model));
+    let mut group = c.benchmark_group("checksums");
+    for factor in FACTORS.iter() {
+        let size = factor * DATA_SIZE;
+        let data = generate_random_data(size);
+        group.throughput(Throughput::Bytes((factor * DATA_SIZE) as u64));
+        group.bench_with_input(
+            BenchmarkId::new("Adler32", size),
+            data.as_slice(),
+            |b, s| {
+                b.iter(|| do_checksum::<Adler32>(s));
+            },
+        );
+        group.bench_with_input(BenchmarkId::new("CRC32", size), data.as_slice(), |b, s| {
+            b.iter(|| do_checksum::<CRC32>(s));
         });
     }
+    group.finish();
 }
 
 criterion_group!(benches, criterion_benchmark);
