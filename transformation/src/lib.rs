@@ -9,8 +9,10 @@
 use std::fmt;
 use std::{error::Error, fmt::Display};
 mod runlength;
+mod movetofront;
 
 pub use runlength::RunLength;
+pub use movetofront::MoveToFront;
 
 /// Trait for calculating transformations on byte level
 pub trait Transform {
