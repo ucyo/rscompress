@@ -32,8 +32,8 @@ pub enum TransformError {
 impl Error for TransformError {
     fn description(&self) -> &str {
         match *self {
-            TransformError::EmptyBufferError => "Buffer is empty",
-            TransformError::SymbolNotFound(val) => "Symbol not found",
+            TransformError::EmptyBufferError => "Empty Buffer",
+            TransformError::SymbolNotFound(_val) => "No Symbol",
         }
     }
 }
