@@ -7,7 +7,7 @@ use log::info;
 
 const RUN_BYTE_CODE: u8 = 0;
 
-/// Run-length struct to sace current byte and metainformation about special cases
+/// Run-length struct to save current byte and metainformation about special cases
 #[derive(Debug)]
 pub struct RunLength {
     current: Option<u8>,
