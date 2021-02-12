@@ -23,6 +23,9 @@ impl MoveToFront {
         let table: Vec<u8> = (0u8..=ALPHABET_SIZE).collect();
         self.table = table;
     }
+    fn rotate(&mut self, pos: usize) {
+        self.table[..pos].rotate_right(1);
+    }
 }
 
 impl Default for MoveToFront {
@@ -45,7 +48,7 @@ impl Transform for MoveToFront {
                 .position(|p| p == byte)
                 .ok_or_else(|| TransformError::SymbolNotFound(*byte))?;
             debug!("Found {:?} at {:?}", byte, pos);
-            self.table[..(pos + 1)].rotate_right(1); // TODO: move to impl block, since reused in reverse
+            self.rotate(pos + 1);
             result.push(pos as u8);
         }
         Ok(result)
@@ -65,7 +68,7 @@ impl Transform for MoveToFront {
                 self.table[ix + 1]
             );
             result.push(self.table[ix]);
-            self.table[..(ix + 1)].rotate_right(1);
+            self.rotate(ix+1);
         }
         Ok(result)
     }
