@@ -68,7 +68,7 @@ impl Transform for MoveToFront {
                 self.table[ix + 1]
             );
             result.push(self.table[ix]);
-            self.rotate(ix+1);
+            self.rotate(ix + 1);
         }
         Ok(result)
     }
