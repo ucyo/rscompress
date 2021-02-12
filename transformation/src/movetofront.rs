@@ -1,4 +1,5 @@
 use crate::{Transform, TransformError};
+use log::{debug};
 
 const ALPHABET_SIZE: u8 = 255; // + 1 number of elements
 
@@ -32,7 +33,7 @@ impl Transform for MoveToFront {
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
             let pos = self.table.iter().position(|p| p == byte);
-            // let pos = pos.unwrap() + 1; // add 1 since pos is not included
+            debug!("Found {:?} at {:?}", byte, pos);
             self.table[..(pos.unwrap() + 1)].rotate_right(1); // TODO: move to impl block, since reused in reverse
             result.push(pos.unwrap() as u8);
         }
@@ -46,7 +47,7 @@ impl Transform for MoveToFront {
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for pos in source.iter() {
             let ix = *pos as usize;
-            // println!("{:?} {:?} {:?}", self.table[ix], self.table[ix-1], self.table[ix+1]);
+            debug!("Found element (w/ surround) {:?} [{:?}] {:?}", self.table[ix], self.table[ix-1], self.table[ix+1]);
             result.push(self.table[ix]);
             self.table[..(ix + 1)].rotate_right(1);
         }
