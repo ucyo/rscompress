@@ -1,10 +1,19 @@
 use criterion::{criterion_group, criterion_main};
 use criterion::{BenchmarkId, Criterion, Throughput};
 use rand::{rngs::OsRng, RngCore};
+use rand::distributions::{Distribution, Uniform};
 use rscompress_transformation::{MoveToFront, RunLength, Transform};
 
 const DATA_SIZE: usize = 10_000;
 const FACTORS: [usize; 5] = [2, 4, 8, 16, 32];
+const ALPHABET_SIZE: u8 = 26;
+
+fn generate_constrained_random(sample_size: usize) -> Vec<u8> {
+    let mut rng = rand::thread_rng();
+    let between = Uniform::new(0,ALPHABET_SIZE);
+    let data: Vec<u8> = between.sample_iter(&mut rng).take(sample_size).collect();
+    data
+}
 
 fn do_transformation<M: Transform + Default>(data: &[u8]) -> Vec<u8> {
     let mut model: M = Default::default();
