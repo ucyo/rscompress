@@ -28,9 +28,9 @@ impl Transform for MoveToFront {
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
             let pos = self.table.iter().position(|p| p == byte);
-            let pos = pos.unwrap() + 1; // add 1 since pos is not included
-            self.table[..pos].rotate_right(1);
-            result.push(pos as u8);
+            // let pos = pos.unwrap() + 1; // add 1 since pos is not included
+            self.table[..(pos.unwrap() + 1)].rotate_right(1); // TODO: move to impl block, since reused in reverse
+            result.push(pos.unwrap() as u8);
         }
         Ok(result)
     }
@@ -46,6 +46,7 @@ mod tests {
 
     #[test]
     fn test_easy_transforms() {
-        transform::<MoveToFront>("bananaaa".as_bytes(), &[99, 99, 111, 2, 2, 2, 1, 1]);
+        transform::<MoveToFront>("bananaaa".as_bytes(), &[98, 98, 110, 1, 1, 1, 0, 0]);
+    }
     }
 }
