@@ -12,6 +12,10 @@ impl MoveToFront {
         let table: Vec<u8> = (0u8..=ALPHABET_SIZE).collect();
         MoveToFront { table }
     }
+    pub fn reset(&mut self) {
+        let table: Vec<u8> = (0u8..=ALPHABET_SIZE).collect();
+        self.table = table;
+    }
 }
 
 impl Default for MoveToFront {
@@ -35,7 +39,18 @@ impl Transform for MoveToFront {
         Ok(result)
     }
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
-        todo!()
+        self.reset();
+        if source.is_empty() {
+            return Err(TransformError::EmptyBufferError);
+        }
+        let mut result: Vec<u8> = Vec::with_capacity(source.len());
+        for pos in source.iter() {
+            let ix = *pos as usize;
+            // println!("{:?} {:?} {:?}", self.table[ix], self.table[ix-1], self.table[ix+1]);
+            result.push(self.table[ix]);
+            self.table[..(ix + 1)].rotate_right(1);
+        }
+        Ok(result)
     }
 }
 
@@ -48,5 +63,23 @@ mod tests {
     fn test_easy_transforms() {
         transform::<MoveToFront>("bananaaa".as_bytes(), &[98, 98, 110, 1, 1, 1, 0, 0]);
     }
+
+    #[test]
+    fn test_easy_reverse() {
+        reverse::<MoveToFront>(&[98, 98, 110, 1, 1, 1, 0, 0], "bananaaa".as_bytes());
+    }
+
+    #[test]
+    fn test_easy_roundtrip() {
+        roundtrip::<MoveToFront>("bananaaa".as_bytes());
+    }
+
+    #[test]
+    fn test_random_roundtrip() {
+        random_roundtrip::<MoveToFront>(100);
+        random_roundtrip::<MoveToFront>(100);
+        random_roundtrip::<MoveToFront>(100);
+        random_roundtrip::<MoveToFront>(100);
+        random_roundtrip::<MoveToFront>(100);
     }
 }
