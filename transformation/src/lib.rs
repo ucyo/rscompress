@@ -25,12 +25,15 @@ pub trait Transform {
 pub enum TransformError {
     /// Buffer is empty
     EmptyBufferError,
+    /// Symbol is not found
+    SymbolNotFound(u8)
 }
 
 impl Error for TransformError {
     fn description(&self) -> &str {
         match *self {
             TransformError::EmptyBufferError => "Buffer is empty",
+            TransformError::SymbolNotFound(val) => "Symbol not found",
         }
     }
 }
@@ -39,6 +42,7 @@ impl Display for TransformError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             TransformError::EmptyBufferError => write!(f, "Can not read because buffer is empty"),
+            TransformError::SymbolNotFound(val) => write!(f, "Symbol [{:?}] not found", val)
         }
     }
 }

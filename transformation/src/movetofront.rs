@@ -32,10 +32,10 @@ impl Transform for MoveToFront {
         }
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         for byte in source.iter() {
-            let pos = self.table.iter().position(|p| p == byte);
+            let pos = self.table.iter().position(|p| p == byte).ok_or_else(|| TransformError::SymbolNotFound(*byte))?;
             debug!("Found {:?} at {:?}", byte, pos);
-            self.table[..(pos.unwrap() + 1)].rotate_right(1); // TODO: move to impl block, since reused in reverse
-            result.push(pos.unwrap() as u8);
+            self.table[..(pos + 1)].rotate_right(1); // TODO: move to impl block, since reused in reverse
+            result.push(pos as u8);
         }
         Ok(result)
     }
