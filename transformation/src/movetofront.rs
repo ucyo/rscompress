@@ -1,8 +1,14 @@
+//! Move-to-Front Transformation
+//!
+//! Implementation of the Move-to-front transformation as described
+//! [here](https://sites.google.com/site/datacompressionguide/mtf).
+//!
 use crate::{Transform, TransformError};
 use log::debug;
 
 const ALPHABET_SIZE: u8 = 255; // + 1 number of elements
 
+/// Move-to-Front struct to save the table
 #[derive(Debug)]
 pub struct MoveToFront {
     table: Vec<u8>,
@@ -25,6 +31,7 @@ impl Default for MoveToFront {
     }
 }
 
+/// Implementation of the Transformation trait for Move-To-Front
 impl Transform for MoveToFront {
     fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
         if source.is_empty() {
