@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main};
 use criterion::{BenchmarkId, Criterion, Throughput};
 use rand::{rngs::OsRng, RngCore};
-use rscompress_transformation::{RunLength, MoveToFront, Transform};
+use rscompress_transformation::{MoveToFront, RunLength, Transform};
 
 const DATA_SIZE: usize = 10_000;
 const FACTORS: [usize; 5] = [2, 4, 8, 16, 32];
