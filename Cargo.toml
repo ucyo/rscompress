@@ -7,3 +7,6 @@ members = [
     "checksums",
     "base"
 ]
+
+# Check profiles for release, bin, and bench
+# https://doc.rust-lang.org/cargo/reference/profiles.html
