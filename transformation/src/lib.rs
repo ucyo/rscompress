@@ -10,9 +10,11 @@ use std::fmt;
 use std::{error::Error, fmt::Display};
 mod movetofront;
 mod runlength;
+mod bwt;
 
 pub use movetofront::MoveToFront;
 pub use runlength::RunLength;
+pub use bwt::BurrowWheeler;
 
 /// Trait for calculating transformations on byte level
 pub trait Transform {

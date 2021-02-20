@@ -13,6 +13,7 @@ repository = "https://github.com/ucyo/rscompress/"
 
 [dependencies]
 log = "0.4.*"
+suffix = "1.2.*"
 
 [dev-dependencies]
 rand = "0.8.*"
