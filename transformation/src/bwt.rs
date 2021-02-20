@@ -39,6 +39,20 @@ mod tests {
     use crate::tests::{random_roundtrip, reverse, roundtrip, transform};
 
     #[test]
+    fn test_easy_transforms() {
+        transform::<BurrowWheeler>("compressioncode".as_bytes(), "neodrsooccimpse".as_bytes());
+    }
+
+    #[test]
+    fn test_easy_reverse() {
+        reverse::<BurrowWheeler>("neodrsooccimpse".as_bytes(), "compressioncode".as_bytes());
+    }
+
+    #[test]
+    fn test_easy_roundtrip() {
+        roundtrip::<BurrowWheeler>("compressioncode".as_bytes());
+    }
+    #[test]
     fn test_random_roundtrip() {
         random_roundtrip::<BurrowWheeler>(100);
         random_roundtrip::<BurrowWheeler>(100);
