@@ -1,19 +1,9 @@
 use criterion::{criterion_group, criterion_main};
 use criterion::{BenchmarkId, Criterion, Throughput};
-use rand::distributions::{Distribution, Uniform};
-use rand::{rngs::OsRng, RngCore};
 use rscompress_transformation::{MoveToFront, RunLength, Transform};
 
-const DATA_SIZE: usize = 10_000;
-const FACTORS: [usize; 5] = [2, 4, 8, 16, 32];
-const ALPHABET_SIZE: u8 = 26;
-
-fn generate_constrained_random(sample_size: usize) -> Vec<u8> {
-    let mut rng = rand::thread_rng();
-    let between = Uniform::new(0, ALPHABET_SIZE);
-    let data: Vec<u8> = between.sample_iter(&mut rng).take(sample_size).collect();
-    data
-}
+const MIN_DATA_SIZE: usize = 1_000;
+const FACTORS: [usize; 5] = [1, 10, 100, 1_000, 10_000];
 
 fn do_transformation<M: Transform + Default>(data: &[u8]) -> Vec<u8> {
     let mut model: M = Default::default();
@@ -26,18 +16,13 @@ fn do_reverse<M: Transform + Default>(data: &[u8]) -> Vec<u8> {
     model.reverse(data).unwrap()
 }
 
-fn generate_random_data(size: usize) -> Vec<u8> {
-    let mut data = vec![0u8; size];
-    OsRng.fill_bytes(&mut data);
-    data
-}
-
 fn criterion_transform(c: &mut Criterion) {
     let mut group = c.benchmark_group("transform");
+    let source = include_bytes!("../../testdata/enwik7.raw");
     for factor in FACTORS.iter() {
-        let size = factor * DATA_SIZE;
-        let data = generate_random_data(size);
-        group.throughput(Throughput::Bytes((factor * DATA_SIZE) as u64));
+        let size = factor * MIN_DATA_SIZE;
+        let data: Vec<u8> = source.iter().take(size).map(|x| *x).collect();
+        group.throughput(Throughput::Bytes(size as u64));
         group.bench_with_input(
             BenchmarkId::new("Run-Length", size),
             data.as_slice(),
@@ -58,10 +43,11 @@ fn criterion_transform(c: &mut Criterion) {
 
 fn criterion_reverse(c: &mut Criterion) {
     let mut group = c.benchmark_group("reverse");
+    let source = include_bytes!("../../testdata/enwik7.raw");
     for factor in FACTORS.iter() {
-        let size = factor * DATA_SIZE;
-        let data = generate_random_data(size);
-        group.throughput(Throughput::Bytes((factor * DATA_SIZE) as u64));
+        let size = factor * MIN_DATA_SIZE;
+        let data: Vec<u8> = source.iter().take(size).map(|x| *x).collect();
+        group.throughput(Throughput::Bytes(size as u64));
         group.bench_with_input(
             BenchmarkId::new("Run-Length", size),
             data.as_slice(),
