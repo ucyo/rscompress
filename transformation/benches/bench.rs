@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main};
 use criterion::{BenchmarkId, Criterion, Throughput};
-use rscompress_transformation::{MoveToFront, RunLength, Transform};
+use rscompress_transformation::{MoveToFront, RunLength, Transform, BurrowWheeler};
 
 const MIN_DATA_SIZE: usize = 1_000;
 const FACTORS: [usize; 5] = [1, 10, 100, 1_000, 10_000];
@@ -37,6 +37,13 @@ fn criterion_transform(c: &mut Criterion) {
                 b.iter(|| do_transformation::<MoveToFront>(s));
             },
         );
+        group.bench_with_input(
+            BenchmarkId::new("Burrow-Wheeler", size),
+            data.as_slice(),
+            |b, s| {
+                b.iter(|| do_transformation::<BurrowWheeler>(s));
+            },
+        );
     }
     group.finish();
 }
@@ -60,6 +67,13 @@ fn criterion_reverse(c: &mut Criterion) {
             data.as_slice(),
             |b, s| {
                 b.iter(|| do_reverse::<MoveToFront>(s));
+            },
+        );
+        group.bench_with_input(
+            BenchmarkId::new("Burrow-Wheeler", size),
+            data.as_slice(),
+            |b, s| {
+                b.iter(|| do_reverse::<BurrowWheeler>(s));
             },
         );
     }
