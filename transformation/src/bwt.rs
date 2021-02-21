@@ -66,10 +66,10 @@ impl Transform for BurrowWheeler {
             ix += 1;
         }
 
-        println!("Source: {:?}", source);
-        println!("Sorted: {:?}", sorted);
-        println!("Counts: {:?}", counts);
-        println!("Self: {:?}", self);
+        debug!("Source: {:?}", source);
+        debug!("Sorted: {:?}", sorted);
+        debug!("Counts: {:?}", counts);
+        debug!("Self: {:?}", self);
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         let tmp = str::from_utf8(source).unwrap();
         let suf = suffix::SuffixTable::new(tmp);
@@ -78,13 +78,13 @@ impl Transform for BurrowWheeler {
             let c = counts[self.ix.unwrap()];
             let ff = [reversed;1];
             let utf_reversed = str::from_utf8(&ff).unwrap();
-            println!("Search {:?}th letter of {:?} ({:?})", c, reversed, utf_reversed);
+            debug!("Search {:?}th letter of {:?} ({:?})", c + 1, reversed, utf_reversed);
             result.push(reversed);
             let mut pos = suf.positions(utf_reversed).to_vec();
             pos.sort_unstable();
-            println!("Positions {:?}", pos);
+            debug!("Positions {:?}", pos);
             self.ix = Some(pos[c] as usize);
-            println!("New ix: {:?}", self.ix);
+            debug!("New ix: {:?}", self.ix);
         }
         Ok(result)
 
