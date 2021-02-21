@@ -28,7 +28,7 @@ impl Transform for BurrowWheeler {
         if source.is_empty() {
             return Err(TransformError::EmptyBufferError)
         }
-        println!("{:?}", source);
+        debug!("{:?}", source);
         let mut result = Vec::with_capacity(source.len());
         let temp = str::from_utf8(source).unwrap();
         let s = suffix::SuffixTable::new(temp);
