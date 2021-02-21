@@ -158,7 +158,7 @@ impl Transform for BurrowWheeler {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tests::{random_roundtrip, reverse, roundtrip, transform};
+    use crate::tests::{random_roundtrip, roundtrip, transform};
 
     #[test]
     fn test_easy_transforms() {
@@ -166,10 +166,9 @@ mod tests {
         transform::<BurrowWheeler>("compressioncode".as_bytes(), "neodrsooccimpse".as_bytes());
     }
 
-    #[test]
-    fn test_easy_reverse() {
-        reverse::<BurrowWheeler>("neodrsooccimpse".as_bytes(), "compressioncode".as_bytes());
-    }
+    // Simple reverse tests will not be working, since information needs to
+    // be transmitted from each tranformed block to successfully reverse it.
+    // TODO: Add tests for multi step transformations.
 
     #[test]
     fn test_easy_roundtrip() {
