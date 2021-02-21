@@ -25,6 +25,10 @@ impl Default for BurrowWheeler {
 
 impl Transform for BurrowWheeler {
     fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
+        if source.is_empty() {
+            return Err(TransformError::EmptyBufferError)
+        }
+        println!("{:?}", source);
         let mut result = Vec::with_capacity(source.len());
         let temp = str::from_utf8(source).unwrap();
         let s = suffix::SuffixTable::new(temp);
