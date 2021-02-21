@@ -1,8 +1,6 @@
-//! # rscompress-transformation
-//!
 //! This crate implements transformation algorithms to be used during compression.
 //!
-//! ## Introduction
+//! # Introduction
 //! The transformation algorithms implemented in this crate are all reversible.
 //! The original order of the data can be reproduced by using the `reverse` operation
 //! defined by the `Transform` Trait.
