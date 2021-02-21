@@ -1,4 +1,3 @@
-use std::todo;
 use std::str;
 use suffix;
 use crate::{Transform, TransformError};
@@ -45,7 +44,46 @@ impl Transform for BurrowWheeler {
         Ok(result)
     }
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
-        todo!()
+        let mut sorted = source.to_vec();
+        sorted.sort_unstable();
+        let mut counts = vec![0usize; sorted.len()];
+
+        let mut counter = 0;
+        let mut last_letter = sorted.first().unwrap();
+        let mut ix: usize = 1;
+        for sym in sorted[1..].iter() {
+            if sym == last_letter {
+                counter += 1;
+            } else {
+                counter = 0;
+                last_letter = sym;
+            }
+            counts[ix] = counter;
+            ix += 1;
+        }
+
+        println!("Source: {:?}", source);
+        println!("Sorted: {:?}", sorted);
+        println!("Counts: {:?}", counts);
+        println!("Self: {:?}", self);
+        let mut result: Vec<u8> = Vec::with_capacity(source.len());
+        let tmp = str::from_utf8(source).unwrap();
+        let suf = suffix::SuffixTable::new(tmp);
+        for _ in 0..source.len() {
+            let reversed = sorted[self.ix.unwrap()];
+            let c = counts[self.ix.unwrap()];
+            let ff = [reversed;1];
+            let utf_reversed = str::from_utf8(&ff).unwrap();
+            println!("Search {:?}th letter of {:?} ({:?})", c, reversed, utf_reversed);
+            result.push(reversed);
+            let mut pos = suf.positions(utf_reversed).to_vec();
+            pos.sort_unstable();
+            println!("Positions {:?}", pos);
+            self.ix = Some(pos[c] as usize);
+            println!("New ix: {:?}", self.ix);
+        }
+        Ok(result)
+
     }
 }
 
