@@ -1,7 +1,7 @@
-use std::str;
-use suffix;
 use crate::{Transform, TransformError};
 use log::debug;
+use std::str;
+use suffix::SuffixTable;
 
 /// Burrow-Wheeler transformation
 ///
@@ -88,24 +88,24 @@ impl Transform for BurrowWheeler {
     /// Transformation of the initial source data
     fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
         if source.is_empty() {
-            return Err(TransformError::EmptyBufferError)
+            return Err(TransformError::EmptyBufferError);
         }
         debug!("{:?}", source);
         let mut result = Vec::with_capacity(source.len());
         let temp = str::from_utf8(source).unwrap();
-        let s = suffix::SuffixTable::new(temp);
+        let s = SuffixTable::new(temp);
         let table = s.table();
         debug!("Suffixtable: {:?} ({})", table, table.len());
         for ix in table.iter() {
             if *ix as usize == 0 {
                 let val = source[source.len() - 1];
                 result.push(val);
-        } else {
+            } else {
                 let val = source[*ix as usize - 1];
                 result.push(val);
+            }
         }
-        }
-        self.ix = table.iter().position(|&x| x==0);
+        self.ix = table.iter().position(|&x| x == 0);
         debug!("Suffixtable Index Position: {:?}", self.ix);
         Ok(result)
     }
@@ -135,13 +135,18 @@ impl Transform for BurrowWheeler {
         debug!("Self: {:?}", self);
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         let tmp = str::from_utf8(source).unwrap();
-        let suf = suffix::SuffixTable::new(tmp);
+        let suf = SuffixTable::new(tmp);
         for _ in 0..source.len() {
             let reversed = sorted[self.ix.unwrap()];
             let c = counts[self.ix.unwrap()];
-            let ff = [reversed;1];
+            let ff = [reversed; 1];
             let utf_reversed = str::from_utf8(&ff).unwrap();
-            debug!("Search {:?}th letter of {:?} ({:?})", c + 1, reversed, utf_reversed);
+            debug!(
+                "Search {:?}th letter of {:?} ({:?})",
+                c + 1,
+                reversed,
+                utf_reversed
+            );
             result.push(reversed);
             let mut pos = suf.positions(utf_reversed).to_vec();
             pos.sort_unstable();
@@ -150,10 +155,8 @@ impl Transform for BurrowWheeler {
             debug!("New ix: {:?}", self.ix);
         }
         Ok(result)
-
     }
 }
-
 
 #[cfg(test)]
 mod tests {

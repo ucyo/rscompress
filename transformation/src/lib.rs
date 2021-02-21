@@ -6,13 +6,13 @@
 //! defined by the `Transform` Trait.
 use std::fmt;
 use std::{error::Error, fmt::Display};
+mod bwt;
 mod movetofront;
 mod runlength;
-mod bwt;
 
+pub use bwt::BurrowWheeler;
 pub use movetofront::MoveToFront;
 pub use runlength::RunLength;
-pub use bwt::BurrowWheeler;
 
 /// Trait for calculating transformations on byte level
 pub trait Transform {

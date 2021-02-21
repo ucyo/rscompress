@@ -1,6 +1,6 @@
 use criterion::{criterion_group, criterion_main};
 use criterion::{BenchmarkId, Criterion, Throughput};
-use rscompress_transformation::{MoveToFront, RunLength, Transform, BurrowWheeler};
+use rscompress_transformation::{BurrowWheeler, MoveToFront, RunLength, Transform};
 
 const MIN_DATA_SIZE: usize = 1_000;
 const FACTORS: [usize; 5] = [1, 10, 100, 1_000, 10_000];
