@@ -1,14 +1,23 @@
-//! Move-to-Front Transformation
-//!
-//! Implementation of the Move-to-front transformation as described
-//! [here](https://sites.google.com/site/datacompressionguide/mtf).
-//!
 use crate::{Transform, TransformError};
 use log::debug;
 
 const ALPHABET_SIZE: u8 = 255; // + 1 number of elements
 
-/// Move-to-Front struct to save the table
+/// Move-to-Front Transformation
+///
+/// Implementation of the Burrow-Wheeler Transformation as
+/// described [here](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform).
+///
+/// # Algorithm
+///
+/// Lorem ipsum
+///
+/// # Example
+///
+/// ```rust
+/// use rscompress_transformation::MoveToFront;
+/// ```
+///
 #[derive(Debug)]
 pub struct MoveToFront {
     table: Vec<u8>,
