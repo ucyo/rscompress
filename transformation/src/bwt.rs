@@ -126,10 +126,13 @@ impl Transform for BurrowWheeler {
     }
     /// Reversing the initial transformation
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
+
+        // generate sorted vector
         let mut sorted = source.to_vec();
         sorted.sort_unstable();
-        let mut counts = vec![0usize; sorted.len()];
 
+        // generate counts vector
+        let mut counts = vec![0usize; sorted.len()];
         let mut counter = 0;
         let mut last_letter = sorted.first().unwrap();
         let mut ix: usize = 1;
