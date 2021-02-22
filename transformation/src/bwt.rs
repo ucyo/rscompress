@@ -126,6 +126,7 @@ impl Transform for BurrowWheeler {
     }
     /// Reversing the initial transformation
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
+        println!("#####");
 
         // generate sorted vector
         let mut sorted = source.to_vec();
@@ -147,27 +148,27 @@ impl Transform for BurrowWheeler {
             ix += 1;
         }
 
-        debug!("Source: {:?}", source);
-        debug!("Sorted: {:?}", sorted);
-        debug!("Counts: {:?}", counts);
-        debug!("Self: {:?}", self);
+        println!("Source: {:?}", source);
+        println!("Sorted: {:?}", sorted);
+        println!("Counts: {:?}", counts);
+        println!("Self: {:?}", self);
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         let suf = SuffixArray::new(source);
         for _ in 0..source.len() {
             let reversed = sorted[self.ix.unwrap()];
+            result.push(reversed);
             let c = counts[self.ix.unwrap()];
             let ff = [reversed; 1];
-            debug!(
+            println!(
                 "Search {:?}th letter of {:?}",
                 c + 1,
                 reversed,
             );
-            result.push(reversed);
             let mut pos = suf.search_all(&ff).to_vec();
             pos.sort_unstable();
-            debug!("Positions {:?}", pos);
+            println!("Positions {:?}", pos);
             self.ix = Some(pos[c] as usize);
-            debug!("New ix: {:?}", self.ix);
+            println!("New ix: {:?}", self.ix);
         }
         Ok(result)
     }
