@@ -135,10 +135,10 @@ mod tests {
 
     #[test]
     fn test_random_roundtrip() {
-        random_roundtrip::<RunLength>(100);
-        random_roundtrip::<RunLength>(100);
-        random_roundtrip::<RunLength>(100);
-        random_roundtrip::<RunLength>(100);
-        random_roundtrip::<RunLength>(100);
+        random_roundtrip::<RunLength>(100, 10_000);
+        random_roundtrip::<RunLength>(100, 10_000);
+        random_roundtrip::<RunLength>(100, 10_000);
+        random_roundtrip::<RunLength>(100, 10_000);
+        random_roundtrip::<RunLength>(100, 10_000);
     }
 }
