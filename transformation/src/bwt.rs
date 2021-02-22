@@ -1,7 +1,7 @@
 use crate::{Transform, TransformError};
 use log::debug;
 use std::str;
-use suffix::SuffixTable;
+use suffix_array::SuffixArray;
 
 /// Burrow-Wheeler transformation
 ///
@@ -117,9 +117,8 @@ impl Transform for BurrowWheeler {
         }
         debug!("{:?}", source);
         let mut result = Vec::with_capacity(source.len());
-        let temp = str::from_utf8(source).unwrap();
-        let s = SuffixTable::new(temp);
-        let table = s.table();
+        let (_, mut table) = SuffixArray::new(source).into_parts();
+        table.remove(0);
         debug!("Suffixtable: {:?} ({})", table, table.len());
         for ix in table.iter() {
             if *ix as usize == 0 {
@@ -159,21 +158,18 @@ impl Transform for BurrowWheeler {
         debug!("Counts: {:?}", counts);
         debug!("Self: {:?}", self);
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
-        let tmp = str::from_utf8(source).unwrap();
-        let suf = SuffixTable::new(tmp);
+        let suf = SuffixArray::new(source);
         for _ in 0..source.len() {
             let reversed = sorted[self.ix.unwrap()];
             let c = counts[self.ix.unwrap()];
             let ff = [reversed; 1];
-            let utf_reversed = str::from_utf8(&ff).unwrap();
             debug!(
-                "Search {:?}th letter of {:?} ({:?})",
+                "Search {:?}th letter of {:?}",
                 c + 1,
                 reversed,
-                utf_reversed
             );
             result.push(reversed);
-            let mut pos = suf.positions(utf_reversed).to_vec();
+            let mut pos = suf.search_all(&ff).to_vec();
             pos.sort_unstable();
             debug!("Positions {:?}", pos);
             self.ix = Some(pos[c] as usize);
