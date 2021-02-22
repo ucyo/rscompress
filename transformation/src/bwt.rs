@@ -192,6 +192,7 @@ mod tests {
     fn test_easy_roundtrip() {
         roundtrip::<BurrowWheeler>("compressioncode".as_bytes());
         roundtrip::<BurrowWheeler>("apple".as_bytes());
+        roundtrip::<BurrowWheeler>("banana".as_bytes());
     }
     #[test]
     fn test_random_roundtrip() {
