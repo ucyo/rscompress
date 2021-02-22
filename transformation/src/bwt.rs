@@ -1,6 +1,5 @@
 use crate::{Transform, TransformError};
 use log::debug;
-use std::str;
 use suffix_array::SuffixArray;
 
 /// Burrow-Wheeler transformation
@@ -116,20 +115,12 @@ impl Transform for BurrowWheeler {
             return Err(TransformError::EmptyBufferError);
         }
         debug!("{:?}", source);
-        let mut result = Vec::with_capacity(source.len());
         let (_, mut table) = SuffixArray::new(source).into_parts();
         table.remove(0);
-        debug!("Suffixtable: {:?} ({})", table, table.len());
-        for ix in table.iter() {
-            if *ix as usize == 0 {
-                let val = source[source.len() - 1];
-                result.push(val);
-            } else {
-                let val = source[*ix as usize - 1];
-                result.push(val);
-            }
-        }
         self.ix = table.iter().position(|&x| x == 0);
+        table[self.ix.unwrap()] = source.len() as u32;
+        let result = table.iter().map(|x| source[(*x - 1) as usize]).collect();
+        debug!("Suffixtable: {:?} ({})", table, table.len());
         debug!("Suffixtable Index Position: {:?}", self.ix);
         Ok(result)
     }
