@@ -10,7 +10,7 @@ use suffix::SuffixTable;
 ///
 /// # Algorithm
 /// In the following is a rough sketch of the algorithm and its inner workings.
-
+///
 /// ## ▶ Transformation
 /// The transformation process involves three steps:
 ///
@@ -50,15 +50,40 @@ use suffix::SuffixTable;
 /// with the actual word, to the length of the original data.
 ///
 /// ```text
-/// $, apple, e, le, ple, pple > $apple, apple$, e$appl, le$app, ple$ap, pple$a > [e, $, l, p, p, a]
+/// apple, e, le, ple, pple > apple, eappl, leapp, pleap, pleap, pplea > [e, l, p, p, a]
 /// ```
 /// The kean reader might have observed that the last letter
 /// is always the one previous in the original word.
-/// Therefore the last characters of `[5, 0, 4, 3, 2, 1]` are `[4, -1, 3, 2, 1, 0]`.
+/// Therefore the last characters of `[5, 4, 4, 3, 2, 1]` are `[4, -1, 3, 2, 1, 0]`.
 /// Since the special character `$` is not important the final vector information is `[e, l, p, p, a]` and `1`
 /// for the index position.
 ///
 /// ## ◀ Reverse
+/// TODO: Improve explanation
+/// The reverse algorithm of BWT uses three vectors of length `N` with `N` being the number of data vector.
+/// The first vector is the actual vector to be reversed i.e. last characters of the suffix array.
+/// The second vector is the first vector sorted.
+/// The third and last vector is a count of the second vector.
+/// The third vector saves the information on the position of the byte.
+/// The following is an example for the `apple` string as above.
+///
+/// ```text
+/// [e, l, p, p, a] > [1, 1, 1, 2, 1]
+/// ```
+///
+///
+/// [e, l, p, p, a]
+/// [a, e, l, p, p]
+/// [1, 1, 1, 2, 1]
+/// i: 0,
+/// The first output is the letter at the index position of the second vector.
+/// In the above example this is pos `1` in `[$, a, e, l, p, p]` and therefore  `a`.
+/// The second output is at the index position of the `n`th occurence of the letter just output in the first vector.
+/// The `n`th occurence is described by the third vector.
+/// In this case it is the first occurence of `a` in vector 1.
+/// This is at the last position. Therefore the output is `p`.
+/// After that is the first occurence of the letter `p` in vector 1.
+/// This is at position 2.
 ///
 /// # Example
 /// ```rust
@@ -176,6 +201,7 @@ mod tests {
     #[test]
     fn test_easy_roundtrip() {
         roundtrip::<BurrowWheeler>("compressioncode".as_bytes());
+        roundtrip::<BurrowWheeler>("apple".as_bytes());
     }
     #[test]
     fn test_random_roundtrip() {
