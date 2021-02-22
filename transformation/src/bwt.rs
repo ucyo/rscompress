@@ -196,10 +196,10 @@ mod tests {
     }
     #[test]
     fn test_random_roundtrip() {
-        random_roundtrip::<BurrowWheeler>(100);
-        random_roundtrip::<BurrowWheeler>(100);
-        random_roundtrip::<BurrowWheeler>(100);
-        random_roundtrip::<BurrowWheeler>(100);
-        random_roundtrip::<BurrowWheeler>(100);
+        random_roundtrip::<BurrowWheeler>(100, 5);
+        random_roundtrip::<BurrowWheeler>(100, 5);
+        random_roundtrip::<BurrowWheeler>(100, 5);
+        random_roundtrip::<BurrowWheeler>(100, 5);
+        random_roundtrip::<BurrowWheeler>(100, 5);
     }
 }

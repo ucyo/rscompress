@@ -78,9 +78,9 @@ pub mod tests {
     }
 
     /// Helper function for testing random transformation roundtrips
-    pub fn random_roundtrip<M: Transform + Default>(trips: usize) {
+    pub fn random_roundtrip<M: Transform + Default>(trips: usize, size: usize) {
         for _ in 0..trips {
-            let mut input = [0u8; 10_000];
+            let mut input = vec![0u8; size];
             OsRng.fill_bytes(&mut input);
             let mut model: M = Default::default();
             let tmp = model.transform(&input).unwrap();

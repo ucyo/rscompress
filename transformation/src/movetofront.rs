@@ -105,10 +105,10 @@ mod tests {
 
     #[test]
     fn test_random_roundtrip() {
-        random_roundtrip::<MoveToFront>(100);
-        random_roundtrip::<MoveToFront>(100);
-        random_roundtrip::<MoveToFront>(100);
-        random_roundtrip::<MoveToFront>(100);
-        random_roundtrip::<MoveToFront>(100);
+        random_roundtrip::<MoveToFront>(100, 10_000);
+        random_roundtrip::<MoveToFront>(100, 10_000);
+        random_roundtrip::<MoveToFront>(100, 10_000);
+        random_roundtrip::<MoveToFront>(100, 10_000);
+        random_roundtrip::<MoveToFront>(100, 10_000);
     }
 }
