@@ -71,9 +71,12 @@ pub mod tests {
 
     /// Helper function for testing transformation roundtrips
     pub fn roundtrip<M: Transform + Default>(input: &[u8]) {
+        println!("Input:       {:?}", input);
         let mut model: M = Default::default();
         let tmp = model.transform(&input).unwrap();
+        println!("Transformed: {:?}", tmp);
         let result = model.reverse(&tmp).unwrap();
+        println!("Reversed:    {:?}", result);
         assert_eq!(result, input)
     }
 
@@ -86,7 +89,9 @@ pub mod tests {
             let tmp = model.transform(&input).unwrap();
             let result = model.reverse(&tmp).unwrap();
             if result != input {
-                print!("Input: {:?}", input);
+                println!("Input:       {:?}", input);
+                println!("Transformed: {:?}", tmp);
+                println!("Reversed:    {:?}", result);
             }
             assert_eq!(result, input)
         }
