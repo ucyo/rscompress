@@ -116,17 +116,22 @@ impl Transform for BurrowWheeler {
         }
         debug!("{:?}", source);
         let (_, mut table) = SuffixArray::new(source).into_parts();
+        debug!("Ori Suffixtable: {:?} ({})", table, table.len());
         table.remove(0);
         self.ix = table.iter().position(|&x| x == 0);
+        debug!("000 Suffixtable: {:?} ({})", table, table.len());
         table[self.ix.unwrap()] = source.len() as u32;
-        let result = table.iter().map(|x| source[(*x - 1) as usize]).collect();
-        debug!("Suffixtable: {:?} ({})", table, table.len());
+        debug!("Rep Suffixtable: {:?} ({})", table, table.len());
+        for x in table.iter_mut() {
+            *x = *x - 1;
+        };
+        let result: Vec<u8> = table.iter().map(|x| source[*x as usize]).collect();
+        debug!("{:?} {:?}", result, source);
         debug!("Suffixtable Index Position: {:?}", self.ix);
         Ok(result)
     }
     /// Reversing the initial transformation
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
-        println!("#####");
 
         // generate sorted vector
         let mut sorted = source.to_vec();
@@ -181,6 +186,8 @@ mod tests {
 
     #[test]
     fn test_easy_transforms() {
+        transform::<BurrowWheeler>(&[123, 139, 39, 62, 139], &[139, 39, 139, 62, 123]);
+        transform::<BurrowWheeler>(&[230, 183, 108, 102, 230], &[108, 183, 230, 102, 230]);
         transform::<BurrowWheeler>("banana".as_bytes(), "nnbaaa".as_bytes());
         transform::<BurrowWheeler>("compressioncode".as_bytes(), "neodrsooccimpse".as_bytes());
     }
