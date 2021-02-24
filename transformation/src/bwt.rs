@@ -204,19 +204,17 @@ impl Transform for BurrowWheeler {
 /// And based on this reorder the original SA.
 ///
 /// # Example
-/// ```rust
+/// ```no_run
 /// let data     = [123, 139, 39, 62, 139];
 /// let expected = [139, 39, 139, 123, 62];
 ///
 /// let mut sa: [usize; 5] = [1, 2, 4, 3, 0];
-/// fix_sa(&mut sa, 3, 2);
+/// fix_suffix_array(&mut sa, 3, 2);
 ///
 /// let result: Vec<u8> = sa.iter().map(|&k| data[k]).collect();
-/// println!("R: {:?}", result);
-/// println!("E: {:?}", expected);
-/// println!("S: {:?}", sa);
+/// assert_eq!(result, expected);
 /// ```
-fn fix_suffix_array(sa: &mut [usize], pos: usize, length: usize) {
+pub fn fix_suffix_array(sa: &mut [usize], pos: usize, length: usize) {
     let mm: Vec<usize> = sa.to_vec().into_iter().collect();
     sa[pos..pos + length]
         .sort_by_cached_key(|k| mm.iter().position(|&x| x == (k + 1)).unwrap_or_default());
@@ -226,6 +224,16 @@ fn fix_suffix_array(sa: &mut [usize], pos: usize, length: usize) {
 mod tests {
     use super::*;
     use crate::tests::{random_roundtrip, roundtrip, transform};
+
+    #[test]
+    fn test_fix_suffix() {
+        let data     = [123, 139, 39, 62, 139];
+        let expected = [139, 39, 139, 123, 62];
+        let mut sa: [usize; 5] = [1, 2, 4, 3, 0];
+        fix_suffix_array(&mut sa, 3, 2);
+        let result: Vec<u8> = sa.iter().map(|&k| data[k]).collect();
+        assert_eq!(result, expected);
+    }
 
     #[test]
     fn test_easy_transforms() {
