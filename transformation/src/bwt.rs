@@ -214,11 +214,29 @@ impl Transform for BurrowWheeler {
 /// let result: Vec<u8> = sa.iter().map(|&k| data[k]).collect();
 /// assert_eq!(result, expected);
 /// ```
-pub fn fix_suffix_array(sa: &mut [usize], pos: usize, length: usize) {
+fn fix_suffix_array(sa: &mut [usize], pos: usize, length: usize) {
     let mm: Vec<usize> = sa.to_vec().into_iter().collect();
     sa[pos..pos + length]
         .sort_by_cached_key(|k| mm.iter().position(|&x| x == (k + 1)).unwrap_or_default());
 }
+
+
+fn get_counts(sorted: &[u8]) -> Vec<usize> {
+    let mut v = *sorted.first().unwrap();
+    let mut counter = 0;
+
+    let mut result: Vec<usize> = sorted[1..].iter().map(|&x| {
+        if x == v {
+            counter += 1
+        }
+        else {counter = 0; v = x }
+        counter
+    }).collect();
+
+    result.insert(0, 0);
+    result
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -233,6 +251,15 @@ mod tests {
         fix_suffix_array(&mut sa, 3, 2);
         let result: Vec<u8> = sa.iter().map(|&k| data[k]).collect();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_counts() {
+        let mut data: [u8;7]  = [123, 139, 39, 62, 139, 139, 139];
+        data.sort();
+
+        let counts = get_counts(&data);
+        assert_eq!(counts, [0, 0, 0, 0, 1, 2, 3])
     }
 
     #[test]
