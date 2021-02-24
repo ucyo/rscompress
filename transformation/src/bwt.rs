@@ -124,7 +124,7 @@ impl Transform for BurrowWheeler {
         debug!("Rep Suffixtable: {:?} ({})", table, table.len());
         for x in table.iter_mut() {
             *x = *x - 1;
-        };
+        }
         let result: Vec<u8> = table.iter().map(|x| source[*x as usize]).collect();
         debug!("{:?} {:?}", result, source);
         debug!("Suffixtable Index Position: {:?}", self.ix);
@@ -132,7 +132,6 @@ impl Transform for BurrowWheeler {
     }
     /// Reversing the initial transformation
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
-
         // generate sorted vector
         let mut sorted = source.to_vec();
         sorted.sort_unstable();
@@ -164,11 +163,7 @@ impl Transform for BurrowWheeler {
             result.push(reversed);
             let c = counts[self.ix.unwrap()];
             let ff = [reversed; 1];
-            println!(
-                "Search {:?}th letter of {:?}",
-                c + 1,
-                reversed,
-            );
+            println!("Search {:?}th letter of {:?}", c + 1, reversed,);
             let mut pos = suf.search_all(&ff).to_vec();
             pos.sort_unstable();
             println!("Positions {:?}", pos);
@@ -177,6 +172,54 @@ impl Transform for BurrowWheeler {
         }
         Ok(result)
     }
+}
+
+/// Fixes `errors' made by the suffix array
+///
+/// The current crate uses a special sign to show the end of a word.
+/// This sign is often treated like the lowest value in lexicographical order.
+/// What follows out of this is, that the rotations considered for the BWT
+/// are not fully compared.
+/// This function fixes this issue
+///
+/// # Notes
+/// Given the vector `[123, 139, 39, 62, 139]` the
+/// suffix array returns `[1, 2, 4, 3, 0]` which maps to [139, 39, 139, 62, 123].
+/// The first column is `[39, 62, 123, 139, 139]`.
+/// The correct rotational matrix is though the following:
+/// ```text
+/// [123, 139,  39,  62, 139],
+/// -------------------------
+/// [ 39,  62, 139, 123, 139],
+/// [ 62, 139, 123, 139,  39],
+/// [123, 139,  39,  62, 139], with original vector @ ix = 2
+/// [139,  39,  62, 139, 123],
+/// [139, 123, 139,  39,  62],
+/// ```
+/// This `feature' is due to the special symbol considered
+/// in the implementation of the suffix array construction.
+///
+/// # Solution
+/// The solution is to look at the indices `x+1` and their position in the SA.
+/// And based on this reorder the original SA.
+///
+/// # Example
+/// ```rust
+/// let data     = [123, 139, 39, 62, 139];
+/// let expected = [139, 39, 139, 123, 62];
+///
+/// let mut sa: [usize; 5] = [1, 2, 4, 3, 0];
+/// fix_sa(&mut sa, 3, 2);
+///
+/// let result: Vec<u8> = sa.iter().map(|&k| data[k]).collect();
+/// println!("R: {:?}", result);
+/// println!("E: {:?}", expected);
+/// println!("S: {:?}", sa);
+/// ```
+fn fix_suffix_array(sa: &mut [usize], pos: usize, length: usize) {
+    let mm: Vec<usize> = sa.to_vec().into_iter().collect();
+    sa[pos..pos + length]
+        .sort_by_cached_key(|k| mm.iter().position(|&x| x == (k + 1)).unwrap_or_default());
 }
 
 #[cfg(test)]
