@@ -119,7 +119,7 @@ impl Transform for BurrowWheeler {
         debug!("Input {:?}", source);
         let (_, mut sarr) = SuffixArray::new(source).into_parts();
         debug!("SARR {:?}", sarr);
-        self.ix = sarr.iter().position(|&x| x == 0 as u32);
+        self.ix = sarr.iter().position(|&x| x == 0);
         sarr[self.ix.unwrap()] = sarr.len() as u32 + 1;
         let mut last_column: Vec<_> = sarr
             .iter()
@@ -141,12 +141,12 @@ impl Transform for BurrowWheeler {
         debug!("Sorted: {:?}", sorted);
         debug!("Counts: {:?}", counts);
         debug!("Self: {:?}", self);
-        let mut result: Vec<u8> = Vec::with_capacity(source.len());
+        let mut result: Vec<u8> = vec![0u8; self.size];
         let suf = SuffixArray::new(source);
         let mut pos = self.ix.unwrap() - 1;
-        for _ in 0..self.size {
+        for r in result.iter_mut() {
             let reversed = sorted[pos];
-            result.push(reversed);
+            *r = reversed;
             let c = counts[pos];
             let ff = [reversed; 1];
             debug!("Search {:?}th letter of {:?}", c + 1, reversed,);
@@ -158,7 +158,7 @@ impl Transform for BurrowWheeler {
             } else {
                 pos = search[c] as usize;
             }
-            debug!("{:?}", result);
+            debug!("{:?}", r);
         }
         Ok(result)
     }
