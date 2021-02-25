@@ -148,9 +148,8 @@ impl Transform for BurrowWheeler {
             let reversed = sorted[pos];
             *r = reversed;
             let c = counts[pos];
-            let ff = [reversed; 1];
-            debug!("Search {:?}th letter of {:?}", c + 1, reversed,);
-            let mut search = suf.search_all(&ff).to_vec();
+            debug!("Search {:?}th letter of {:?}", c + 1, reversed);
+            let mut search = suf.search_all(&[reversed]).to_vec();
             search.sort_unstable();
             debug!("Positions {:?}", search);
             if search[c] != 0 && search[c] < self.ix.unwrap() as u32 {
@@ -190,14 +189,14 @@ mod tests {
     use super::*;
     use crate::tests::{random_roundtrip, roundtrip, transform};
 
-    // #[test]
-    // fn test_counts() {
-    //     let mut data: [u8; 7] = [123, 139, 39, 62, 139, 139, 139];
-    //     data.sort();
+    #[test]
+    fn test_counts() {
+        let mut data: [u8; 7] = [123, 139, 39, 62, 139, 139, 139];
+        data.sort();
 
-    //     let counts = get_counts(&data);
-    //     assert_eq!(counts, [0, 0, 0, 0, 1, 2, 3])
-    // }
+        let counts = get_counts(&data);
+        assert_eq!(counts, [0, 0, 0, 0, 1, 2, 3])
+    }
 
     #[test]
     fn test_easy_transforms() {
