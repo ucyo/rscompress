@@ -91,11 +91,12 @@ use suffix_array::SuffixArray;
 #[derive(Debug)]
 pub struct BurrowWheeler {
     ix: Option<usize>,
+    size: usize,
 }
 
 impl BurrowWheeler {
     pub fn new() -> Self {
-        BurrowWheeler { ix: None }
+        BurrowWheeler { ix: None, size: 0 }
     }
     pub fn reset(&mut self) {
         self.ix = None
@@ -108,61 +109,20 @@ impl Default for BurrowWheeler {
     }
 }
 
-fn fix_suffix_array(sarr: &mut [u32], source: &[u8]) {
-    let positions = get_indices_to_be_fixed(sarr.as_ref(), source);
-    for (pos, length) in positions.iter() {
-        fix_suffix_array_at_position(sarr, *pos, *length)
-    }
-}
-
-fn get_indices_to_be_fixed(sarr: &[u32], source: &[u8]) -> Vec<(usize, usize)>{
-    let mut first_column: Vec<u8> = sarr.iter().map(|&x| source[x as usize]).collect();
-    first_column.sort_unstable();
-
-    let mut result: Vec<(usize, usize)> = Vec::new();
-    let (v, first_column) = first_column.split_first().unwrap();
-    let mut value = *v;
-    let mut c = 0usize;
-    for (i, &x) in first_column.iter().enumerate() {
-        println!("F[{:?}]={:?} (count: {:?}, last_value: {:?})", i, x, c, value);
-        if x == value {
-            c += 1
-        } else {
-            if c != 0 {result.push((i+1-c, c+1))}
-            c = 0;
-            value = x;
-        }
-    }
-    if c != 0 {result.push((first_column.len() - c, c + 1))}
-    result
-
-}
-
-
 impl Transform for BurrowWheeler {
     /// Transformation of the initial source data
     fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
+        self.size = source.len();
         if source.is_empty() {
             return Err(TransformError::EmptyBufferError);
         }
-        debug!("{:?}", source);
-        let (k, mut sarr) = SuffixArray::new(source).into_parts();
-        println!("Ori Suffixtable: {:?} ({}) {:?}", sarr, sarr.len(), k);
-        sarr.remove(0);
-        self.ix = sarr.iter().position(|&x| x == 0);
-        debug!("000 Suffixtable: {:?} ({})", sarr, sarr.len());
-        sarr[self.ix.unwrap()] = source.len() as u32;
-        debug!("Rep Suffixtable: {:?} ({})", sarr, sarr.len());
-        for x in sarr.iter_mut() {
-            *x = *x - 1;
-        }
-        let result: Vec<u8> = sarr.iter().map(|x| source[*x as usize]).collect();
-        println!("OLD last column: {:?} {:?}", result, sarr);
-        fix_suffix_array(&mut sarr, source);
-        let result: Vec<u8> = sarr.iter().map(|x| source[*x as usize]).collect();
-        println!("NEW last column: {:?} {:?}", result, sarr);
-        debug!("{:?} {:?}", result, source);
-        debug!("Suffixtable Index Position: {:?}", self.ix);
+        println!("Input {:?}", source);
+        let (_, mut sarr) = SuffixArray::new(source).into_parts();
+        println!("SARR {:?}", sarr);
+        self.ix = sarr.iter().position(|&x| x==0 as u32);
+        sarr[self.ix.unwrap()] = sarr.len() as u32 + 1;
+        let mut result: Vec<_> = sarr.iter().map(|&x| *source.get((x-1) as usize).unwrap_or(&0u8)).collect();
+        result.remove(self.ix.unwrap());
         Ok(result)
     }
     /// Reversing the initial transformation
@@ -193,67 +153,25 @@ impl Transform for BurrowWheeler {
         println!("Self: {:?}", self);
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         let suf = SuffixArray::new(source);
-        for _ in 0..source.len() {
-            let reversed = sorted[self.ix.unwrap()];
+        let mut pos = self.ix.unwrap() - 1;
+        for _ in 0..self.size {
+            let reversed = sorted[pos];
             result.push(reversed);
-            let c = counts[self.ix.unwrap()];
+            let c = counts[pos];
             let ff = [reversed; 1];
-            println!("Search {:?}th letter of {:?}", c + 1, reversed,);
-            let mut pos = suf.search_all(&ff).to_vec();
-            pos.sort_unstable();
-            println!("Positions {:?}", pos);
-            self.ix = Some(pos[c] as usize);
-            println!("New ix: {:?}", self.ix);
+            debug!("Search {:?}th letter of {:?}", c + 1, reversed,);
+            let mut search = suf.search_all(&ff).to_vec();
+            search.sort_unstable();
+            debug!("Positions {:?}", search);
+            if search[c] != 0 && search[c] < self.ix.unwrap() as u32 {
+                pos = search[c] as usize - 1;
+            } else {
+                pos = search[c] as usize;
+            }
+            println!("{:?}", result);
         }
         Ok(result)
     }
-}
-
-/// Fixes `errors' made by the suffix array
-///
-/// The current crate uses a special sign to show the end of a word.
-/// This sign is often treated like the lowest value in lexicographical order.
-/// What follows out of this is, that the rotations considered for the BWT
-/// are not fully compared.
-/// This function fixes this issue
-///
-/// # Notes
-/// Given the vector `[123, 139, 39, 62, 139]` the
-/// suffix array returns `[1, 2, 4, 3, 0]` which maps to [139, 39, 139, 62, 123].
-/// The first column is `[39, 62, 123, 139, 139]`.
-/// The correct rotational matrix is though the following:
-/// ```text
-/// [123, 139,  39,  62, 139],
-/// -------------------------
-/// [ 39,  62, 139, 123, 139],
-/// [ 62, 139, 123, 139,  39],
-/// [123, 139,  39,  62, 139], with original vector @ ix = 2
-/// [139,  39,  62, 139, 123],
-/// [139, 123, 139,  39,  62],
-/// ```
-/// This `feature' is due to the special symbol considered
-/// in the implementation of the suffix array construction.
-///
-/// # Solution
-/// The solution is to look at the indices `x+1` and their position in the SA.
-/// And based on this reorder the original SA.
-///
-/// # Example
-/// ```no_run
-/// let data     = [123, 139, 39, 62, 139];
-/// let expected = [139, 39, 139, 123, 62];
-///
-/// let mut sa: [usize; 5] = [1, 2, 4, 3, 0];
-/// fix_suffix_array(&mut sa, 3, 2);
-///
-/// let result: Vec<u8> = sa.iter().map(|&k| data[k]).collect();
-/// assert_eq!(result, expected);
-/// ```
-fn fix_suffix_array_at_position(sa: &mut [u32], pos: usize, length: usize) {
-    let mm: Vec<u32> = sa.to_vec().into_iter().collect();
-    println!("checking {:?} {} {}", sa, pos, length);
-    sa[pos..pos + length]
-        .sort_by_cached_key(|k| mm.iter().position(|&x| x ==( (k + 1) % mm.len() as u32)).unwrap());
 }
 
 fn get_counts(sorted: &[u8]) -> Vec<usize> {
@@ -282,39 +200,21 @@ mod tests {
     use super::*;
     use crate::tests::{random_roundtrip, roundtrip, transform};
 
-    #[test]
-    fn test_fix_suffix() {
-        let data = [123, 139, 39, 62, 139];
-        let expected = [139, 39, 139, 123, 62];
-        let mut sa: [u32; 5] = [1, 2, 4, 3, 0];
-        fix_suffix_array_at_position(&mut sa, 3, 2);
-        let result: Vec<u8> = sa.iter().map(|&k| data[k as usize]).collect();
-        assert_eq!(result, expected);
-    }
+    // #[test]
+    // fn test_counts() {
+    //     let mut data: [u8; 7] = [123, 139, 39, 62, 139, 139, 139];
+    //     data.sort();
 
-    #[test]
-    fn test_need_to_be_fixed() {
-        let data = [123, 139, 39, 62, 139];
-        let sa: [u32; 5] = [1, 2, 4, 3, 0];
-        let result = get_indices_to_be_fixed(&sa, &data);
-        assert_eq!(result, vec![(3,2)])
-    }
-
-    #[test]
-    fn test_counts() {
-        let mut data: [u8; 7] = [123, 139, 39, 62, 139, 139, 139];
-        data.sort();
-
-        let counts = get_counts(&data);
-        assert_eq!(counts, [0, 0, 0, 0, 1, 2, 3])
-    }
+    //     let counts = get_counts(&data);
+    //     assert_eq!(counts, [0, 0, 0, 0, 1, 2, 3])
+    // }
 
     #[test]
     fn test_easy_transforms() {
-        transform::<BurrowWheeler>(&[123, 139, 39, 62, 139], &[139, 39, 139, 62, 123]);
-        transform::<BurrowWheeler>(&[230, 183, 108, 102, 230], &[108, 183, 230, 102, 230]);
-        transform::<BurrowWheeler>("banana".as_bytes(), "nnbaaa".as_bytes());
-        transform::<BurrowWheeler>("compressioncode".as_bytes(), "neodrsooccimpse".as_bytes());
+        transform::<BurrowWheeler>(&[123, 139, 39, 62, 139], &[139, 139, 39, 62, 123]);
+        transform::<BurrowWheeler>(&[230, 183, 108, 102, 230], &[230, 108, 183, 230, 102]);
+        transform::<BurrowWheeler>("banana".as_bytes(), "annbaa".as_bytes());
+        transform::<BurrowWheeler>("compressioncode".as_bytes(), "enodrsooccimpse".as_bytes());
     }
 
     // Simple reverse tests will not be working, since information needs to
@@ -323,7 +223,8 @@ mod tests {
 
     #[test]
     fn test_easy_roundtrip() {
-        // roundtrip::<BurrowWheeler>(&[123, 139, 39, 62, 139]);
+        roundtrip::<BurrowWheeler>(&[34, 10, 0, 206, 40]);
+        roundtrip::<BurrowWheeler>(&[123, 139, 39, 62, 139]);
         roundtrip::<BurrowWheeler>(&[230, 183, 108, 102, 230]);
         roundtrip::<BurrowWheeler>("compressioncode".as_bytes());
         roundtrip::<BurrowWheeler>("apple".as_bytes());
@@ -331,10 +232,10 @@ mod tests {
     }
     #[test]
     fn test_random_roundtrip() {
-        random_roundtrip::<BurrowWheeler>(100, 5);
-        random_roundtrip::<BurrowWheeler>(100, 5);
-        random_roundtrip::<BurrowWheeler>(100, 5);
-        random_roundtrip::<BurrowWheeler>(100, 5);
-        random_roundtrip::<BurrowWheeler>(100, 5);
+        random_roundtrip::<BurrowWheeler>(100, 500);
+        random_roundtrip::<BurrowWheeler>(100, 500);
+        random_roundtrip::<BurrowWheeler>(100, 500);
+        random_roundtrip::<BurrowWheeler>(100, 500);
+        random_roundtrip::<BurrowWheeler>(100, 500);
     }
 }
