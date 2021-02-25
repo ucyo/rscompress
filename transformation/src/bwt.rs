@@ -108,6 +108,37 @@ impl Default for BurrowWheeler {
     }
 }
 
+fn fix_suffix_array(sarr: &mut [u32], source: &[u8]) {
+    let positions = get_indices_to_be_fixed(sarr.as_ref(), source);
+    for (pos, length) in positions.iter() {
+        fix_suffix_array_at_position(sarr, *pos, *length)
+    }
+}
+
+fn get_indices_to_be_fixed(sarr: &[u32], source: &[u8]) -> Vec<(usize, usize)>{
+    let mut first_column: Vec<u8> = sarr.iter().map(|&x| source[x as usize]).collect();
+    first_column.sort_unstable();
+
+    let mut result: Vec<(usize, usize)> = Vec::new();
+    let (v, first_column) = first_column.split_first().unwrap();
+    let mut value = *v;
+    let mut c = 0usize;
+    for (i, &x) in first_column.iter().enumerate() {
+        println!("F[{:?}]={:?} (count: {:?}, last_value: {:?})", i, x, c, value);
+        if x == value {
+            c += 1
+        } else {
+            if c != 0 {result.push((i+1-c, c+1))}
+            c = 0;
+            value = x;
+        }
+    }
+    if c != 0 {result.push((first_column.len() - c, c + 1))}
+    result
+
+}
+
+
 impl Transform for BurrowWheeler {
     /// Transformation of the initial source data
     fn transform(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
@@ -115,17 +146,21 @@ impl Transform for BurrowWheeler {
             return Err(TransformError::EmptyBufferError);
         }
         debug!("{:?}", source);
-        let (_, mut table) = SuffixArray::new(source).into_parts();
-        debug!("Ori Suffixtable: {:?} ({})", table, table.len());
-        table.remove(0);
-        self.ix = table.iter().position(|&x| x == 0);
-        debug!("000 Suffixtable: {:?} ({})", table, table.len());
-        table[self.ix.unwrap()] = source.len() as u32;
-        debug!("Rep Suffixtable: {:?} ({})", table, table.len());
-        for x in table.iter_mut() {
+        let (k, mut sarr) = SuffixArray::new(source).into_parts();
+        println!("Ori Suffixtable: {:?} ({}) {:?}", sarr, sarr.len(), k);
+        sarr.remove(0);
+        self.ix = sarr.iter().position(|&x| x == 0);
+        debug!("000 Suffixtable: {:?} ({})", sarr, sarr.len());
+        sarr[self.ix.unwrap()] = source.len() as u32;
+        debug!("Rep Suffixtable: {:?} ({})", sarr, sarr.len());
+        for x in sarr.iter_mut() {
             *x = *x - 1;
         }
-        let result: Vec<u8> = table.iter().map(|x| source[*x as usize]).collect();
+        let result: Vec<u8> = sarr.iter().map(|x| source[*x as usize]).collect();
+        println!("OLD last column: {:?} {:?}", result, sarr);
+        fix_suffix_array(&mut sarr, source);
+        let result: Vec<u8> = sarr.iter().map(|x| source[*x as usize]).collect();
+        println!("NEW last column: {:?} {:?}", result, sarr);
         debug!("{:?} {:?}", result, source);
         debug!("Suffixtable Index Position: {:?}", self.ix);
         Ok(result)
@@ -214,10 +249,11 @@ impl Transform for BurrowWheeler {
 /// let result: Vec<u8> = sa.iter().map(|&k| data[k]).collect();
 /// assert_eq!(result, expected);
 /// ```
-fn fix_suffix_array(sa: &mut [usize], pos: usize, length: usize) {
-    let mm: Vec<usize> = sa.to_vec().into_iter().collect();
+fn fix_suffix_array_at_position(sa: &mut [u32], pos: usize, length: usize) {
+    let mm: Vec<u32> = sa.to_vec().into_iter().collect();
+    println!("checking {:?} {} {}", sa, pos, length);
     sa[pos..pos + length]
-        .sort_by_cached_key(|k| mm.iter().position(|&x| x == (k + 1)).unwrap_or_default());
+        .sort_by_cached_key(|k| mm.iter().position(|&x| x ==( (k + 1) % mm.len() as u32)).unwrap());
 }
 
 fn get_counts(sorted: &[u8]) -> Vec<usize> {
@@ -250,10 +286,18 @@ mod tests {
     fn test_fix_suffix() {
         let data = [123, 139, 39, 62, 139];
         let expected = [139, 39, 139, 123, 62];
-        let mut sa: [usize; 5] = [1, 2, 4, 3, 0];
-        fix_suffix_array(&mut sa, 3, 2);
-        let result: Vec<u8> = sa.iter().map(|&k| data[k]).collect();
+        let mut sa: [u32; 5] = [1, 2, 4, 3, 0];
+        fix_suffix_array_at_position(&mut sa, 3, 2);
+        let result: Vec<u8> = sa.iter().map(|&k| data[k as usize]).collect();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_need_to_be_fixed() {
+        let data = [123, 139, 39, 62, 139];
+        let sa: [u32; 5] = [1, 2, 4, 3, 0];
+        let result = get_indices_to_be_fixed(&sa, &data);
+        assert_eq!(result, vec![(3,2)])
     }
 
     #[test]
@@ -279,7 +323,7 @@ mod tests {
 
     #[test]
     fn test_easy_roundtrip() {
-        roundtrip::<BurrowWheeler>(&[123, 139, 39, 62, 139]);
+        // roundtrip::<BurrowWheeler>(&[123, 139, 39, 62, 139]);
         roundtrip::<BurrowWheeler>(&[230, 183, 108, 102, 230]);
         roundtrip::<BurrowWheeler>("compressioncode".as_bytes());
         roundtrip::<BurrowWheeler>("apple".as_bytes());
