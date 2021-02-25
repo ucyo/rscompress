@@ -119,9 +119,12 @@ impl Transform for BurrowWheeler {
         debug!("Input {:?}", source);
         let (_, mut sarr) = SuffixArray::new(source).into_parts();
         debug!("SARR {:?}", sarr);
-        self.ix = sarr.iter().position(|&x| x==0 as u32);
+        self.ix = sarr.iter().position(|&x| x == 0 as u32);
         sarr[self.ix.unwrap()] = sarr.len() as u32 + 1;
-        let mut result: Vec<_> = sarr.iter().map(|&x| *source.get((x-1) as usize).unwrap_or(&0u8)).collect();
+        let mut result: Vec<_> = sarr
+            .iter()
+            .map(|&x| *source.get((x - 1) as usize).unwrap_or(&0u8))
+            .collect();
         result.remove(self.ix.unwrap());
         Ok(result)
     }
