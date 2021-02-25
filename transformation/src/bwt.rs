@@ -121,12 +121,12 @@ impl Transform for BurrowWheeler {
         debug!("SARR {:?}", sarr);
         self.ix = sarr.iter().position(|&x| x == 0 as u32);
         sarr[self.ix.unwrap()] = sarr.len() as u32 + 1;
-        let mut result: Vec<_> = sarr
+        let mut last_column: Vec<_> = sarr
             .iter()
             .map(|&x| *source.get((x - 1) as usize).unwrap_or(&0u8))
             .collect();
-        result.remove(self.ix.unwrap());
-        Ok(result)
+        last_column.remove(self.ix.unwrap());
+        Ok(last_column)
     }
     /// Reversing the initial transformation
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
