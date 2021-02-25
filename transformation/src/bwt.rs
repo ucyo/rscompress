@@ -116,9 +116,9 @@ impl Transform for BurrowWheeler {
         if source.is_empty() {
             return Err(TransformError::EmptyBufferError);
         }
-        println!("Input {:?}", source);
+        debug!("Input {:?}", source);
         let (_, mut sarr) = SuffixArray::new(source).into_parts();
-        println!("SARR {:?}", sarr);
+        debug!("SARR {:?}", sarr);
         self.ix = sarr.iter().position(|&x| x==0 as u32);
         sarr[self.ix.unwrap()] = sarr.len() as u32 + 1;
         let mut result: Vec<_> = sarr.iter().map(|&x| *source.get((x-1) as usize).unwrap_or(&0u8)).collect();
@@ -132,25 +132,12 @@ impl Transform for BurrowWheeler {
         sorted.sort_unstable();
 
         // generate counts vector
-        let mut counts = vec![0usize; sorted.len()];
-        let mut counter = 0;
-        let mut last_letter = sorted.first().unwrap();
-        let mut ix: usize = 1;
-        for sym in sorted[1..].iter() {
-            if sym == last_letter {
-                counter += 1;
-            } else {
-                counter = 0;
-                last_letter = sym;
-            }
-            counts[ix] = counter;
-            ix += 1;
-        }
+        let counts = get_counts(&sorted);
 
-        println!("Source: {:?}", source);
-        println!("Sorted: {:?}", sorted);
-        println!("Counts: {:?}", counts);
-        println!("Self: {:?}", self);
+        debug!("Source: {:?}", source);
+        debug!("Sorted: {:?}", sorted);
+        debug!("Counts: {:?}", counts);
+        debug!("Self: {:?}", self);
         let mut result: Vec<u8> = Vec::with_capacity(source.len());
         let suf = SuffixArray::new(source);
         let mut pos = self.ix.unwrap() - 1;
@@ -168,7 +155,7 @@ impl Transform for BurrowWheeler {
             } else {
                 pos = search[c] as usize;
             }
-            println!("{:?}", result);
+            debug!("{:?}", result);
         }
         Ok(result)
     }
