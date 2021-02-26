@@ -189,7 +189,7 @@ mod tests {
     #[test]
     fn test_counts() {
         let mut data: [u8; 7] = [123, 139, 39, 62, 139, 139, 139];
-        data.sort();
+        data.sort_unstable();
 
         let counts = get_counts(&data);
         assert_eq!(counts, [0, 0, 0, 0, 1, 2, 3])
