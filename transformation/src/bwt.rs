@@ -1,7 +1,6 @@
-use std::collections::HashMap;
-
 use crate::{Transform, TransformError};
 use log::debug;
+use std::collections::HashMap;
 use suffix_array::SuffixArray;
 
 /// Burrow-Wheeler transformation
@@ -103,6 +102,9 @@ impl BurrowWheeler {
     pub fn reset(&mut self) {
         self.ix = None
     }
+    pub fn with_ix_and_size(ix: usize, size: usize) -> Self {
+        BurrowWheeler { ix: Some(ix), size }
+    }
 }
 
 impl Default for BurrowWheeler {
@@ -160,7 +162,6 @@ impl Transform for BurrowWheeler {
     }
 }
 
-
 fn get_position_map(data: &[u8]) -> HashMap<u8, Vec<usize>> {
     let mut result: HashMap<u8, Vec<usize>> = HashMap::new();
     for (i, d) in data.iter().enumerate() {
@@ -169,12 +170,12 @@ fn get_position_map(data: &[u8]) -> HashMap<u8, Vec<usize>> {
             Some(v) => v.push(i),
             None => {
                 let k = vec![i];
-                let _ = result.insert(*d, k);},
+                let _ = result.insert(*d, k);
+            }
         };
     }
     result
 }
-
 
 fn get_counts(sorted: &[u8]) -> Vec<usize> {
     let mut v = *sorted.first().unwrap();
