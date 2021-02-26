@@ -24,7 +24,7 @@ pub struct MoveToFront {
 }
 
 impl MoveToFront {
-    fn new() -> Self {
+    pub fn new() -> Self {
         let table: Vec<u8> = (0u8..=ALPHABET_SIZE).collect();
         MoveToFront { table }
     }
