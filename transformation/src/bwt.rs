@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{Transform, TransformError};
 use log::debug;
 use suffix_array::SuffixArray;
@@ -137,28 +139,42 @@ impl Transform for BurrowWheeler {
         // generate counts vector
         let counts = get_counts(&sorted);
 
+        // generate mapping
+        let mapping = get_position_map(source);
+
         debug!("Source: {:?}", source);
         debug!("Sorted: {:?}", sorted);
         debug!("Counts: {:?}", counts);
         debug!("Self: {:?}", self);
         let mut result: Vec<u8> = vec![0u8; self.size];
-        let suf = SuffixArray::new(source);
         let mut pos = self.ix.unwrap() - 1;
         for r in result.iter_mut() {
             let reversed = sorted[pos];
             *r = reversed;
             let c = counts[pos];
-            debug!("Search {:?}th letter of {:?}", c + 1, reversed);
-            let mut search = suf.search_all(&[reversed]).to_vec();
-            search.sort_unstable();
-            debug!("Positions {:?}", search);
-            let ix = search[c] as usize;
+            let ix = *mapping.get(r).unwrap().get(c).unwrap();
             pos = ix - (ix != 0 && ix < self.ix.unwrap()) as usize;
             debug!("{:?}", r);
         }
         Ok(result)
     }
 }
+
+
+fn get_position_map(data: &[u8]) -> HashMap<u8, Vec<usize>> {
+    let mut result: HashMap<u8, Vec<usize>> = HashMap::new();
+    for (i, d) in data.iter().enumerate() {
+        let v = result.get_mut(d);
+        match v {
+            Some(v) => v.push(i),
+            None => {
+                let k = vec![i];
+                let _ = result.insert(*d, k);},
+        };
+    }
+    result
+}
+
 
 fn get_counts(sorted: &[u8]) -> Vec<usize> {
     let mut v = *sorted.first().unwrap();
