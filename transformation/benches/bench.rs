@@ -69,13 +69,6 @@ fn criterion_reverse(c: &mut Criterion) {
                 b.iter(|| do_reverse::<MoveToFront>(s));
             },
         );
-        group.bench_with_input(
-            BenchmarkId::new("Burrow-Wheeler", size),
-            data.as_slice(),
-            |b, s| {
-                b.iter(|| do_reverse::<BurrowWheeler>(s));
-            },
-        );
     }
     group.finish();
 }
