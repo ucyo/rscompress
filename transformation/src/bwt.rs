@@ -152,11 +152,8 @@ impl Transform for BurrowWheeler {
             let mut search = suf.search_all(&[reversed]).to_vec();
             search.sort_unstable();
             debug!("Positions {:?}", search);
-            if search[c] != 0 && search[c] < self.ix.unwrap() as u32 {
-                pos = search[c] as usize - 1;
-            } else {
-                pos = search[c] as usize;
-            }
+            let ix = search[c] as usize;
+            pos = ix - (ix != 0 && ix < self.ix.unwrap()) as usize;
             debug!("{:?}", r);
         }
         Ok(result)
