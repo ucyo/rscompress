@@ -124,12 +124,13 @@ impl Transform for BurrowWheeler {
         let (_, mut sarr) = SuffixArray::new(source).into_parts();
         debug!("SARR {:?}", sarr);
         self.ix = sarr.iter().position(|&x| x == 0);
-        sarr[self.ix.unwrap()] = sarr.len() as u32 + 1;
+        let ix = self.ix.ok_or(TransformError::MissingIndex)?;
+        sarr[ix] = sarr.len() as u32 + 1;
         let mut last_column: Vec<_> = sarr
             .iter()
             .map(|&x| *source.get((x - 1) as usize).unwrap_or(&0u8))
             .collect();
-        last_column.remove(self.ix.unwrap());
+        last_column.remove(ix);
         Ok(last_column)
     }
     /// Reversing the initial transformation
