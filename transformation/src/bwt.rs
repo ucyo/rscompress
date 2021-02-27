@@ -136,7 +136,7 @@ impl Transform for BurrowWheeler {
     /// Reversing the initial transformation
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
         debug!("{:?}", self);
-        let bix = self.ix.ok_or_else(|| TransformError::MissingIndex)?;
+        let bix = self.ix.ok_or(TransformError::MissingIndex)?;
 
         // generate sorted vector
         let mut sorted = source.to_vec();
