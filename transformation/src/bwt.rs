@@ -134,6 +134,9 @@ impl Transform for BurrowWheeler {
     }
     /// Reversing the initial transformation
     fn reverse(&mut self, source: &[u8]) -> Result<Vec<u8>, TransformError> {
+        debug!("{:?}", self);
+        let bix = self.ix.ok_or_else(|| TransformError::MissingIndex)?;
+
         // generate sorted vector
         let mut sorted = source.to_vec();
         sorted.sort_unstable();
@@ -149,13 +152,13 @@ impl Transform for BurrowWheeler {
         debug!("Counts: {:?}", counts);
         debug!("Self: {:?}", self);
         let mut result: Vec<u8> = vec![0u8; self.size];
-        let mut pos = self.ix.unwrap() - 1;
+        let mut pos = bix - 1;
         for r in result.iter_mut() {
             let reversed = sorted[pos];
             *r = reversed;
             let c = counts[pos];
             let ix = *mapping.get(r).unwrap().get(c).unwrap();
-            pos = ix - (ix != 0 && ix < self.ix.unwrap()) as usize;
+            pos = ix - (ix != 0 && ix < bix) as usize;
             debug!("{:?}", r);
         }
         Ok(result)
@@ -210,6 +213,13 @@ mod tests {
 
         let counts = get_counts(&data);
         assert_eq!(counts, [0, 0, 0, 0, 1, 2, 3])
+    }
+
+    #[test]
+    fn test_should_return_error() {
+        let mut m = BurrowWheeler::new();
+        let k = m.reverse("reverse".as_bytes());
+        assert!(k.is_err())
     }
 
     #[test]
