@@ -1,11 +1,11 @@
 [workspace]
 
 members = [
-    "transformation",
-    "approximation",
-    "coding",
-    "checksums",
-    "base"
+    "rscompress-transformation",
+    "rscompress-approximation",
+    "rscompress-coding",
+    "rscompress-checksums",
+    "rscompress"
 ]
 
 # Check profiles for release, bin, and bench
