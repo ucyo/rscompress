@@ -31,6 +31,8 @@ pub enum TransformError {
     MissingIndex,
     /// Missing symbol in the reverse mapping of Burrow Wheeler
     MissingMapping(u8),
+    /// Missing count of symbol
+    MissingCountMap(u8, usize),
 }
 
 impl Error for TransformError {
@@ -40,6 +42,7 @@ impl Error for TransformError {
             TransformError::SymbolNotFound(_val) => "No Symbol",
             TransformError::MissingIndex => "Missing index position",
             TransformError::MissingMapping(_val) => "No Mapping",
+            TransformError::MissingCountMap(_, _) => "Can not find enough occurences of symbol",
         }
     }
 }
@@ -50,7 +53,8 @@ impl Display for TransformError {
             TransformError::EmptyBufferError => write!(f, "Can not read because buffer is empty"),
             TransformError::SymbolNotFound(val) => write!(f, "Symbol [{:?}] not found", val),
             TransformError::MissingIndex => write!(f, "There is no index given"),
-            TransformError::MissingMapping(val) => write!(f, "Mapping for [{:?}] is missing", val)
+            TransformError::MissingMapping(val) => write!(f, "Mapping for [{:?}] is missing", val),
+            TransformError::MissingCountMap(sym, c) => write!(f, "Missing {:?}. occurence of symbol '{:?}'", c + 1, sym),
         }
     }
 }
