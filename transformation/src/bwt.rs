@@ -158,7 +158,8 @@ impl Transform for BurrowWheeler {
             let reversed = sorted[pos];
             *r = reversed;
             let c = counts[pos];
-            let ix = *mapping.get(r).unwrap().get(c).unwrap();
+            let m = mapping.get(r).ok_or(TransformError::MissingMapping(*r))?;
+            let ix = *m.get(c).unwrap();
             pos = ix - (ix != 0 && ix < bix) as usize;
             debug!("{:?}", r);
         }
