@@ -29,6 +29,8 @@ pub enum TransformError {
     SymbolNotFound(u8),
     /// Missing index of Burrow Wheeler
     MissingIndex,
+    /// Missing symbol in the reverse mapping of Burrow Wheeler
+    MissingMapping(u8),
 }
 
 impl Error for TransformError {
@@ -37,6 +39,7 @@ impl Error for TransformError {
             TransformError::EmptyBufferError => "Empty Buffer",
             TransformError::SymbolNotFound(_val) => "No Symbol",
             TransformError::MissingIndex => "Missing index position",
+            TransformError::MissingMapping(_val) => "No Mapping",
         }
     }
 }
@@ -47,6 +50,7 @@ impl Display for TransformError {
             TransformError::EmptyBufferError => write!(f, "Can not read because buffer is empty"),
             TransformError::SymbolNotFound(val) => write!(f, "Symbol [{:?}] not found", val),
             TransformError::MissingIndex => write!(f, "There is no index given"),
+            TransformError::MissingMapping(val) => write!(f, "Mapping for [{:?}] is missing", val)
         }
     }
 }
