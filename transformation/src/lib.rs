@@ -27,6 +27,8 @@ pub enum TransformError {
     EmptyBufferError,
     /// Symbol is not found
     SymbolNotFound(u8),
+    /// Missing index of Burrow Wheeler
+    MissingIndex,
 }
 
 impl Error for TransformError {
@@ -34,6 +36,7 @@ impl Error for TransformError {
         match *self {
             TransformError::EmptyBufferError => "Empty Buffer",
             TransformError::SymbolNotFound(_val) => "No Symbol",
+            TransformError::MissingIndex => "Missing index position",
         }
     }
 }
@@ -43,6 +46,7 @@ impl Display for TransformError {
         match *self {
             TransformError::EmptyBufferError => write!(f, "Can not read because buffer is empty"),
             TransformError::SymbolNotFound(val) => write!(f, "Symbol [{:?}] not found", val),
+            TransformError::MissingIndex => write!(f, "There is no index given"),
         }
     }
 }
