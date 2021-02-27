@@ -143,7 +143,7 @@ impl Transform for BurrowWheeler {
         sorted.sort_unstable();
 
         // generate counts vector
-        let counts = get_counts(&sorted);
+        let counts = get_counts(&sorted)?;
 
         // generate mapping
         let mapping = get_position_map(source);
@@ -181,8 +181,8 @@ fn get_position_map(data: &[u8]) -> HashMap<u8, Vec<usize>> {
     result
 }
 
-fn get_counts(sorted: &[u8]) -> Vec<usize> {
-    let mut v = *sorted.first().unwrap();
+fn get_counts(sorted: &[u8]) -> Result<Vec<usize>, TransformError> {
+    let mut v = *sorted.first().ok_or(TransformError::EmptyBufferError)?;
     let mut counter = 0;
 
     let mut result: Vec<usize> = sorted[1..]
@@ -199,7 +199,7 @@ fn get_counts(sorted: &[u8]) -> Vec<usize> {
         .collect();
 
     result.insert(0, 0);
-    result
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -212,7 +212,7 @@ mod tests {
         let mut data: [u8; 7] = [123, 139, 39, 62, 139, 139, 139];
         data.sort_unstable();
 
-        let counts = get_counts(&data);
+        let counts = get_counts(&data).unwrap();
         assert_eq!(counts, [0, 0, 0, 0, 1, 2, 3])
     }
 
