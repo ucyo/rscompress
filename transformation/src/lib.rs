@@ -54,7 +54,9 @@ impl Display for TransformError {
             TransformError::SymbolNotFound(val) => write!(f, "Symbol [{:?}] not found", val),
             TransformError::MissingIndex => write!(f, "There is no index given"),
             TransformError::MissingMapping(val) => write!(f, "Mapping for [{:?}] is missing", val),
-            TransformError::MissingCountMap(sym, c) => write!(f, "Missing {:?}. occurence of symbol '{:?}'", c + 1, sym),
+            TransformError::MissingCountMap(sym, c) => {
+                write!(f, "Missing {:?}. occurence of symbol '{:?}'", c + 1, sym)
+            }
         }
     }
 }
