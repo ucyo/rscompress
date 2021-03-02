@@ -122,4 +122,15 @@ mod tests {
         assert_eq!(f.get_h_freq(12), 36);
         assert_eq!(f.get_h_freq(14), 46);
     }
+
+    #[test]
+    fn test_frequency_tuple_calculation() {
+        let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
+        let f = Fenwick::with_frequencies(frequencies);
+
+        assert_eq!(f.get_freq_bounds(8), (17, 20, 46));
+        assert_eq!(f.get_freq_bounds(3), (2, 3, 46));
+        assert_eq!(f.get_freq_bounds(10), (26, 31, 46));
+        assert_eq!(f.get_freq_bounds(14), (37, 46, 46));
+    }
 }
