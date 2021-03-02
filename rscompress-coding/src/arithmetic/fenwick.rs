@@ -1,3 +1,4 @@
+#![allow(dead_code, unused_variables)]
 use crate::arithmetic::Statistics;
 
 #[derive(Debug)]
@@ -30,6 +31,14 @@ impl Fenwick {
             *f = (*f >> 1) + (*f == 1) as usize;
         }
     }
+}
+
+fn backward(num: usize) -> usize {
+    num - (num & (!num + 1))
+}
+
+fn forward(num: usize) -> usize {
+    num + (num & (!num + 1))
 }
 
 impl Default for Fenwick {
@@ -67,5 +76,25 @@ mod tests {
         c.normalize();
         assert_eq!(c.freq, result);
         assert_eq!(c.get_total(), 47);
+    }
+
+    #[test]
+    fn test_backwards() {
+        let f = Fenwick::new();
+
+        assert_eq!(backward(13), 12);
+        assert_eq!(backward(8), 0);
+        assert_eq!(backward(2), 0);
+        assert_eq!(backward(9), 8);
+        assert_eq!(backward(2), 0);
+    }
+
+    #[test]
+    fn test_forward() {
+        let f = Fenwick::new();
+
+        assert_eq!(forward(13), 14);
+        assert_eq!(forward(14), 16);
+        assert_eq!(forward(16), 32);
     }
 }
