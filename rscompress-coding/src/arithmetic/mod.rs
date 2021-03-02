@@ -6,7 +6,7 @@ trait Model {
 
 mod fenwick;
 trait Statistics {
-    fn get_freq_count(&self, symbol: u8) -> (usize, usize, usize);
+    fn get_freq_bounds(&self, symbol: u8) -> (usize, usize, usize);
     fn update_freq_count(&mut self, symbol: u8);
     fn get_symbol(&self, target: usize) -> usize;
     fn get_total(&self) -> usize;
