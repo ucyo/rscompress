@@ -1,7 +1,7 @@
 #![allow(dead_code, unused_variables)]
 use crate::arithmetic::Statistics;
 
-pub const NUMBER_SYMBOLS: usize = 14;
+pub const NUMBER_SYMBOLS: u16 = 14;
 
 #[derive(Debug)]
 struct Fenwick {
@@ -12,12 +12,13 @@ struct Fenwick {
 impl Fenwick {
     pub fn new() -> Self {
         Fenwick {
-            freq: vec![0, NUMBER_SYMBOLS + 1], // plus 1 for 0
+            // TODO should this be 1 for symbols?
+            freq: vec![0, NUMBER_SYMBOLS as usize + 1], // plus 1 for 0
             inc: 1,
         }
     }
     pub fn with_frequencies(frequencies: Vec<usize>) -> Self {
-        assert!(frequencies.len() == NUMBER_SYMBOLS + 1); // plus 1 for 0
+        assert!(frequencies.len() == NUMBER_SYMBOLS as usize + 1); // plus 1 for 0
         let test = frequencies.split_first().unwrap();
         assert!(*test.0 == 0); // first element must be zero
         assert!(test.1.iter().position(|&x| x == 0).is_none()); // all other elements are at least 1
@@ -45,6 +46,14 @@ impl Fenwick {
     }
 }
 
+fn map(symbol: u8) -> u16 {
+    if symbol == 0 {
+        NUMBER_SYMBOLS
+    } else {
+        symbol as u16
+    }
+}
+
 fn backward(num: usize) -> usize {
     num - (num & (!num + 1))
 }
@@ -61,7 +70,7 @@ impl Default for Fenwick {
 
 impl Statistics for Fenwick {
     fn get_total(&self) -> usize {
-        todo!()
+        self.get_h_freq(NUMBER_SYMBOLS)
     }
     fn get_symbol(&self, target: usize) -> usize {
         todo!()
@@ -70,7 +79,11 @@ impl Statistics for Fenwick {
         todo!()
     }
     fn get_freq_bounds(&self, symbol: u8) -> (usize, usize, usize) {
-        todo!()
+        let s = map(symbol);
+        let lower = self.get_h_freq(s - 1);
+        let higher = self.get_h_freq(s);
+        let total = self.get_total();
+        (lower, higher, total)
     }
 }
 
@@ -124,6 +137,12 @@ mod tests {
     }
 
     #[test]
+    fn test_internal_mapping() {
+        assert_eq!(map(16), 16);
+        assert_eq!(map(0), NUMBER_SYMBOLS);
+    }
+
+    #[test]
     fn test_frequency_tuple_calculation() {
         let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
         let f = Fenwick::with_frequencies(frequencies);
@@ -133,4 +152,8 @@ mod tests {
         assert_eq!(f.get_freq_bounds(10), (26, 31, 46));
         assert_eq!(f.get_freq_bounds(14), (37, 46, 46));
     }
+
+    // TODO Test if increment works
+
+    // TODO Test if increment with 256 elements work
 }
