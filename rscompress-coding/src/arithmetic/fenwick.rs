@@ -1,10 +1,13 @@
 #![allow(dead_code, unused_variables)]
 use crate::arithmetic::Statistics;
 
-// Currently the number of symbols is limited globally
+/// The currently allowed number of symbols
 pub const NUMBER_SYMBOLS: u16 = 14;
 
-/// Fenwick's Tree Structure
+/// Fenwick's Tree Structure for implicit O(log n) frequency counts
+///
+/// Implicit tree structure with O(log n) for updating and retrieving cumulative count for frequencies.
+/// TODO: Currently the model is limited to a known number of symbols. This must be updated to allow arbitary number of symbols.
 #[derive(Debug)]
 pub struct Fenwick {
     freq: Vec<usize>,
@@ -12,23 +15,32 @@ pub struct Fenwick {
 }
 
 impl Fenwick {
-    /// Generate new Fenwick Tree
+    /// Generate a new Fenwick tree with NUMBER_SYMBOLS options
     pub fn new() -> Self {
         Fenwick {
-            freq: vec![0; NUMBER_SYMBOLS as usize + 1], // plus 1 for 0
+            // `+1` is necessary since `self.freq[0]` must always be set to `0`
+            freq: vec![0; NUMBER_SYMBOLS as usize + 1],
             inc: 1,
         }
     }
+
+    /// Generate a new Fenwick tree with predefined frequencies
     pub fn with_frequencies(frequencies: Vec<usize>) -> Self {
-        assert!(frequencies.len() == NUMBER_SYMBOLS as usize + 1); // plus 1 for 0
-        let test = frequencies.split_first().unwrap();
-        assert!(*test.0 == 0); // first element must be zero
-        assert!(test.1.iter().position(|&x| x == 0).is_none()); // all other elements are at least 1
+        // Check if the predefined frequencies cover the whole symbol range
+        assert!(frequencies.len() == NUMBER_SYMBOLS as usize + 1);
+
+        // The first element of the frequency count must be 0 and
+        let (first, _) = frequencies.split_first().unwrap();
+        assert!(*first == 0);
+
+        // TODO: Add check if frequencies table has all the properties of a Fenwick Tree
         Fenwick {
             freq: frequencies,
             ..Default::default()
         }
     }
+
+    /// Normalize frequency counts if the total_count of symbols is close to `usize::MAX`
     pub(crate) fn normalize(&mut self) {
         for f in self.freq.iter_mut() {
             *f = (*f >> 1) + (*f == 1) as usize;
@@ -46,11 +58,14 @@ impl Fenwick {
         }
         result
     }
+
+    /// Get reference to inner frequency counts
     pub fn get_ref(&self) -> &Vec<usize> {
         self.freq.as_ref()
     }
 }
 
+/// Mapping of symbols to support arbitary i.e. `u16::MAX` number of entries
 fn map(symbol: u8) -> u16 {
     if symbol == 0 {
         NUMBER_SYMBOLS
@@ -59,20 +74,24 @@ fn map(symbol: u8) -> u16 {
     }
 }
 
+/// Backwards calculation of entries needed for retrieving cum. freq. counts in O(log n)
 fn backward(num: usize) -> usize {
     num - (num & (!num + 1))
 }
 
+/// Backwards calculation of entries needed for adding cum. freq. counts in O(log n)
 fn forward(num: usize) -> usize {
     num + (num & (!num + 1))
 }
 
+/// Implementation of defaults
 impl Default for Fenwick {
     fn default() -> Self {
         Fenwick::new()
     }
 }
 
+/// Implementation of the Statistics trait
 impl Statistics for Fenwick {
     fn get_total(&self) -> usize {
         self.get_h_freq(NUMBER_SYMBOLS)
