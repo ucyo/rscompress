@@ -76,7 +76,11 @@ impl Statistics for Fenwick {
         todo!()
     }
     fn update_freq_count(&mut self, symbol: u8) {
-        todo!()
+        let mut ix = map(symbol) as usize;
+        while ix <= self.freq.len() {
+            self.freq[ix] += self.inc;
+            ix = forward(ix);
+        }
     }
     fn get_freq_bounds(&self, symbol: u8) -> (usize, usize, usize) {
         let s = map(symbol);
@@ -141,8 +145,6 @@ mod tests {
         let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
         let f = Fenwick::with_frequencies(frequencies);
 
-        // These frequencies are not the lower bounds from the paper, since
-        // the implementation considers 0 as a possible value as well
         assert_eq!(f.get_h_freq(1), 1);
         assert_eq!(f.get_h_freq(9), 26);
         assert_eq!(f.get_h_freq(7), 17);
@@ -168,7 +170,22 @@ mod tests {
         assert_eq!(f.get_freq_bounds(14), (37, 46, 46));
     }
 
-    // TODO Test if increment works
+    #[test]
+    fn test_frequency_increment() {
+        let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
+        let mut f = Fenwick::with_frequencies(frequencies);
+
+        assert_eq!(f.get_h_freq(7), 17);
+        f.update_freq_count(7);
+        f.update_freq_count(7);
+        assert_eq!(f.get_h_freq(7), 19);
+        f.update_freq_count(3);
+        f.update_freq_count(8);
+        f.update_freq_count(12);
+        assert_eq!(f.get_h_freq(3), 4);
+        assert_eq!(f.get_h_freq(8), 24);
+        assert_eq!(f.get_h_freq(12), 41);
+    }
 
     // TODO Test if increment with 256 elements work
 }
