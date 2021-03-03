@@ -13,7 +13,7 @@ impl Fenwick {
     pub fn new() -> Self {
         Fenwick {
             // TODO should this be 1 for symbols?
-            freq: vec![0, NUMBER_SYMBOLS as usize + 1], // plus 1 for 0
+            freq: vec![0; NUMBER_SYMBOLS as usize + 1], // plus 1 for 0
             inc: 1,
         }
     }
@@ -43,6 +43,9 @@ impl Fenwick {
             i = backward(i);
         }
         result
+    }
+    pub fn get_ref(&self) -> &Vec<usize> {
+        self.freq.as_ref()
     }
 }
 
@@ -211,6 +214,19 @@ mod tests {
         assert_eq!(f.get_symbol(17), 7);
         assert_eq!(f.get_symbol(18), 7);
         assert_eq!(f.get_symbol(19), 7);
+    }
+
+    #[test]
+    fn test_build_example_table() {
+        let mut f = Fenwick::new();
+        let expected: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
+        let counts: Vec<usize> = vec![0, 1, 1, 1, 4, 3, 5, 2, 3, 6, 5, 4, 1, 1, 9];
+        for (sym, count) in counts.iter().enumerate() {
+            for _ in 0..*count {
+                f.update_freq_count(sym as u8);
+            }
+        }
+        assert_eq!(f.freq.as_ref(), expected);
     }
 
     // TODO Test if increment with 256 elements work
