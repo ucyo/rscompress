@@ -82,10 +82,10 @@ impl Statistics for Fenwick {
         while mid > 0 {
             let nmid = s + mid;
             if nmid <= NUMBER_SYMBOLS as usize && self.freq[nmid] <= t {
-                t = t - self.freq[nmid];
+                t -= self.freq[nmid];
                 s = nmid;
             }
-            mid = mid / 2;
+            mid /= 2;
         }
         s
     }
