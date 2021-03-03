@@ -73,7 +73,18 @@ impl Statistics for Fenwick {
         self.get_h_freq(NUMBER_SYMBOLS)
     }
     fn get_symbol(&self, target: usize) -> usize {
-        todo!()
+        let mut s = 0usize;
+        let mut t = target;
+        let mut mid = 2usize.pow((NUMBER_SYMBOLS as f32).log2().floor() as u32);
+        while mid > 0 {
+            let nmid = s + mid;
+            if nmid <= NUMBER_SYMBOLS as usize && self.freq[nmid] <= t {
+                t = t - self.freq[nmid];
+                s = nmid;
+            }
+            mid = mid / 2;
+        }
+        s
     }
     fn update_freq_count(&mut self, symbol: u8) {
         let mut ix = map(symbol) as usize;
@@ -185,6 +196,21 @@ mod tests {
         assert_eq!(f.get_h_freq(3), 4);
         assert_eq!(f.get_h_freq(8), 24);
         assert_eq!(f.get_h_freq(12), 41);
+    }
+
+    #[test]
+    fn test_symbol_recovery() {
+        let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
+        let f = Fenwick::with_frequencies(frequencies);
+        assert_eq!(f.get_symbol(28), 9);
+        assert_eq!(f.get_symbol(5), 3);
+        assert_eq!(f.get_symbol(13), 5);
+        assert_eq!(f.get_symbol(36), 12);
+        assert_eq!(f.get_symbol(40), 13);
+        assert_eq!(f.get_symbol(41), 13);
+        assert_eq!(f.get_symbol(17), 7);
+        assert_eq!(f.get_symbol(18), 7);
+        assert_eq!(f.get_symbol(19), 7);
     }
 
     // TODO Test if increment with 256 elements work
