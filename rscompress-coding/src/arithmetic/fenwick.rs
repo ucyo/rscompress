@@ -113,7 +113,7 @@ mod tests {
     fn test_normalization() {
         let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10]; // sum = 46
         let result: Vec<usize> = vec![0, 1, 1, 1, 3, 1, 4, 1, 10, 3, 5, 2, 8, 1, 5]; // sum = 23
-        let result2: Vec<usize> = vec![0, 1, 1, 1, 1, 1, 2, 1,  5, 1, 2, 1, 4, 1, 2]; // sum = 11
+        let result2: Vec<usize> = vec![0, 1, 1, 1, 1, 1, 2, 1, 5, 1, 2, 1, 4, 1, 2]; // sum = 11
         let mut c = Fenwick::with_frequencies(frequencies);
 
         c.normalize();
