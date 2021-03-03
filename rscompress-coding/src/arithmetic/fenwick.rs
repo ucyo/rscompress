@@ -1,18 +1,20 @@
 #![allow(dead_code, unused_variables)]
 use crate::arithmetic::Statistics;
 
+// Currently the number of symbols is limited globally
 pub const NUMBER_SYMBOLS: u16 = 14;
 
+/// Fenwick's Tree Structure
 #[derive(Debug)]
-struct Fenwick {
+pub struct Fenwick {
     freq: Vec<usize>,
     inc: usize,
 }
 
 impl Fenwick {
+    /// Generate new Fenwick Tree
     pub fn new() -> Self {
         Fenwick {
-            // TODO should this be 1 for symbols?
             freq: vec![0; NUMBER_SYMBOLS as usize + 1], // plus 1 for 0
             inc: 1,
         }
