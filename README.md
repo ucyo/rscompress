@@ -1,7 +1,7 @@
 <h1 align='center'>rscompress</h1>
 
 <p align=center>
-  A library for compression of floating-point data. <br><br>
+  A compression library in Rust with focus on scientific data. <br><br>
   <img src="assets/logo.svg" height="368"/>
 </p>
 
