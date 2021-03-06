@@ -31,6 +31,15 @@ pub trait Map: Default {
     fn get_symbol_at(&self, ix: usize) -> &Self::Input;
 }
 
+/// Maps arbitary alphabets to usize and back
+///
+/// The Cartographer maps arbitary alphabets to usize integers.
+/// This way one Fenix Tree implementatino can be used for byte-/character-based,
+/// word-based, or any other type-based alphabets.
+pub struct Cartographer<T> {
+    next_symbol: usize,
+    map: Mapping<T>
+}
 /// Fenwick's Tree Structure for implicit O(log n) frequency counts
 ///
 /// Implicit tree structure with O(log n) for updating and retrieving cumulative count for frequencies.
