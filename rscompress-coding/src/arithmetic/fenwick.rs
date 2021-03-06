@@ -27,6 +27,8 @@ pub trait Map: Default {
     fn get_ref(&self) -> &Mapping<Self::Input>;
     /// Get the number of elements being mapped
     fn alphabet_size(&self) -> usize;
+    /// Get Symbol at index position
+    fn get_symbol_at(&self, ix: usize) -> &Self::Input;
 }
 
 /// Fenwick's Tree Structure for implicit O(log n) frequency counts
