@@ -114,6 +114,7 @@ impl<M: Map> Statistics for Fenwick<M> {
     fn get_total(&self) -> usize {
         self.get_h_freq(self.map.alphabet_size())
     }
+
     fn get_symbol(&self, target: usize) -> &Self::Symbol {
         let mut ix = 0usize;
         let mut t = target;
@@ -128,6 +129,7 @@ impl<M: Map> Statistics for Fenwick<M> {
         }
         self.map.get_symbol_at(ix)
     }
+
     fn update_freq_count(&mut self, symbol: &Self::Symbol) {
         let mut ix = self.map.get_index_of(symbol).unwrap_or_else(||self.map.install(symbol));
         while ix <= self.freq.len() {
@@ -135,6 +137,7 @@ impl<M: Map> Statistics for Fenwick<M> {
             ix = forward(ix);
         }
     }
+
     fn get_freq_bounds(&self, symbol: &Self::Symbol) -> (usize, usize, usize) {
         let ix = self.map.get_index_of(symbol).unwrap();
         let lower = self.get_h_freq(ix - 1);
