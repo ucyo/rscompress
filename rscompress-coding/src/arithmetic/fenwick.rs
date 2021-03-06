@@ -72,6 +72,7 @@ impl<M: Map> Fenwick<M> {
 
     /// Get H count for symbol at index
     pub(crate) fn get_h_freq(&self, ix: usize) -> usize {
+        let mut ix = ix;
         let mut result = 0usize;
 
         while ix != 0 {
