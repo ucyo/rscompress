@@ -70,14 +70,13 @@ impl<M: Map> Fenwick<M> {
         }
     }
 
-    /// This symbol does not represent the original symbol to be encoded
-    pub(crate) fn get_h_freq(&self, symbol: &M::Input) -> usize {
-        let mut i = self.map.get_index_of(symbol).unwrap_or_else(|| self.map.install(symbol));
+    /// Get H count for symbol at index
+    pub(crate) fn get_h_freq(&self, ix: usize) -> usize {
         let mut result = 0usize;
 
-        while i != 0 {
-            result += self.freq[i];
-            i = backward(i);
+        while ix != 0 {
+            result += self.freq[ix];
+            ix = backward(ix);
         }
         result
     }
