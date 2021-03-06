@@ -1,17 +1,42 @@
 #![allow(dead_code, unused_variables)]
+use std::collections::HashMap;
 use crate::arithmetic::Statistics;
 
-/// The currently allowed number of symbols
-pub const NUMBER_SYMBOLS: u16 = 14;
+/// Mapping of arbitary elements to index position for frequency counts
+pub type Mapping<T> = HashMap<T, usize>;
+
+/// Trait for defining the mapping strategy from symbols to freq counts
+///
+/// The Fenwick Tree saves each symbol in an array.
+/// The index position of the symbol is not changed.
+/// For character-based symbols the number of symbols is pre-defined i.e. 256.
+/// But for word-based symbols the alphabet can of arbitary length.
+/// Therefore a mapping is needed from word to symbol index.
+/// This trait represents this mapping.
+/// The associated type defines the symbol type and can be `u8` (character-based),
+/// `String` or `Vec<u8>` (word-based), or anything else.
+pub trait Map: Default {
+    type Input;
+    /// Create new mapping
+    fn new() -> Self;
+    /// Get index for Symbol
+    fn get_index_of(&self, symbol: &Self::Input) -> Option<usize>;
+    /// Associate an index position with a symbol
+    fn install(&mut self, symbol: &Self::Input);
+    /// Get inner mapping as a reference
+    fn get_ref(&self) -> &Mapping<Self::Input>;
+    /// Get the number of elements being mapped
+    fn alphabet_size(&self) -> usize;
+}
 
 /// Fenwick's Tree Structure for implicit O(log n) frequency counts
 ///
 /// Implicit tree structure with O(log n) for updating and retrieving cumulative count for frequencies.
-/// TODO: Currently the model is limited to a known number of symbols. This must be updated to allow arbitary number of symbols.
 #[derive(Debug)]
-pub struct Fenwick {
+pub struct Fenwick<M> {
     freq: Vec<usize>,
     inc: usize,
+    map: M,
 }
 
 impl Fenwick {
