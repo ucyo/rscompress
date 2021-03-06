@@ -39,13 +39,14 @@ pub struct Fenwick<M> {
     map: M,
 }
 
-impl Fenwick {
+impl<M: Map> Fenwick<M> {
     /// Generate a new Fenwick tree with NUMBER_SYMBOLS options
     pub fn new() -> Self {
         Fenwick {
             // `+1` is necessary since `self.freq[0]` must always be set to `0`
-            freq: vec![0; NUMBER_SYMBOLS as usize + 1],
+            freq: vec![0; 1],
             inc: 1,
+            map: M::default(),
         }
     }
 
