@@ -22,7 +22,7 @@ pub trait Map: Default {
     /// Get index for Symbol
     fn get_index_of(&self, symbol: &Self::Input) -> Option<usize>;
     /// Associate an index position with a symbol
-    fn install(&mut self, symbol: &Self::Input);
+    fn install(&mut self, symbol: &Self::Input) -> usize;
     /// Get inner mapping as a reference
     fn get_ref(&self) -> &Mapping<Self::Input>;
     /// Get the number of elements being mapped
