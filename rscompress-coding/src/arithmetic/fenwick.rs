@@ -108,35 +108,37 @@ impl<M: Map> Default for Fenwick<M> {
 }
 
 /// Implementation of the Statistics trait
-impl Statistics for Fenwick {
+impl<M: Map> Statistics for Fenwick<M> {
+    type Symbol = M::Input;
+
     fn get_total(&self) -> usize {
-        self.get_h_freq(NUMBER_SYMBOLS)
+        self.get_h_freq(self.map.alphabet_size())
     }
-    fn get_symbol(&self, target: usize) -> usize {
-        let mut s = 0usize;
+    fn get_symbol(&self, target: usize) -> &Self::Symbol {
+        let mut ix = 0usize;
         let mut t = target;
-        let mut mid = 2usize.pow((NUMBER_SYMBOLS as f32).log2().floor() as u32);
+        let mut mid = 2usize.pow((self.map.alphabet_size() as f32).log2().floor() as u32);
         while mid > 0 {
-            let nmid = s + mid;
-            if nmid <= NUMBER_SYMBOLS as usize && self.freq[nmid] <= t {
+            let nmid = ix + mid;
+            if nmid <= self.map.alphabet_size() as usize && self.freq[nmid] <= t {
                 t -= self.freq[nmid];
-                s = nmid;
+                ix = nmid;
             }
             mid /= 2;
         }
-        s
+        self.map.get_symbol_at(ix)
     }
-    fn update_freq_count(&mut self, symbol: u8) {
-        let mut ix = map(symbol) as usize;
+    fn update_freq_count(&mut self, symbol: &Self::Symbol) {
+        let mut ix = self.map.get_index_of(symbol).unwrap_or_else(||self.map.install(symbol));
         while ix <= self.freq.len() {
             self.freq[ix] += self.inc;
             ix = forward(ix);
         }
     }
-    fn get_freq_bounds(&self, symbol: u8) -> (usize, usize, usize) {
-        let s = map(symbol);
-        let lower = self.get_h_freq(s - 1);
-        let higher = self.get_h_freq(s);
+    fn get_freq_bounds(&self, symbol: &Self::Symbol) -> (usize, usize, usize) {
+        let ix = self.map.get_index_of(symbol).unwrap();
+        let lower = self.get_h_freq(ix - 1);
+        let higher = self.get_h_freq(ix);
         let total = self.get_total();
         (lower, higher, total)
     }
