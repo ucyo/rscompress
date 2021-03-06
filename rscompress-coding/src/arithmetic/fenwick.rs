@@ -97,19 +97,6 @@ impl<M: Map> Fenwick<M> {
         }
     }
 
-    /// Generate a new Fenwick tree with predefined frequencies
-    // pub fn with_frequencies(mut frequencies: Vec<usize>, map: M) -> Self {
-    //     // None of the frequencies is allowed to be 0
-    //     assert!(frequencies.iter().fold(true, |acc, val| acc & ( *val != 0usize)));
-    //     for k in frequencies.en
-
-    //     // TODO: Add check if frequencies table has all the properties of a Fenwick Tree
-    //     Fenwick {
-    //         freq: frequencies,
-    //         ..Default::default()
-    //     }
-    // }
-
     /// Normalize frequency counts if the total_count of symbols is close to `usize::MAX`
     pub(crate) fn normalize(&mut self) {
         for f in self.freq.iter_mut() {
