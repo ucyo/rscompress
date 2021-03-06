@@ -163,11 +163,42 @@ impl<M: Map> Statistics for Fenwick<M> {
     }
 
     fn update_freq_count(&mut self, symbol: &Self::Symbol) {
-        let mut ix = self.map.get_index_of(symbol).unwrap_or_else(||self.map.install(symbol));
-        while ix <= self.freq.len() {
-            self.freq[ix] += self.inc;
-            ix = forward(ix);
-        }
+        let ix = self.map.get_index_of(symbol);
+        match ix {
+            // Symbol has been seen before
+            Some(v) => {
+                let mut ix = v;
+                while ix <= self.freq.len() {
+                    self.freq[ix] += self.inc;
+                    ix = forward(ix);
+                }
+            }
+            // New Symbol
+            None => {
+                assert_eq!(self.map.alphabet_size() + 1, self.freq.len());
+                let n = self.map.install(symbol);
+                // Add the correct log freq counts
+                if n % 2 == 1 {
+                    self.freq.push(1);
+                } else if n % 4 == 2 {
+                    self.freq.push(1 + self.freq[n-1]);
+                } else if n % 8 == 4 {
+                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]);
+                } else if n % 16 == 8 {
+                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4]);
+                } else if n % 32 == 16 {
+                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4] + self.freq[n - 8]);
+                } else if n % 64 == 32 {
+                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4] + self.freq[n - 8]+ self.freq[n - 16]);
+                } else if n % 128 == 64 {
+                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4] + self.freq[n - 8]+ self.freq[n - 16] + self.freq[n - 32]);
+                } else if n % 256 == 128 {
+                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4] + self.freq[n - 8]+ self.freq[n - 16] + self.freq[n - 32] + self.freq[n - 64]);
+                } else {
+                    panic!("Too many symbols. Need to be automated to a loop")
+                }
+            }
+        };
     }
 
     fn get_freq_bounds(&self, symbol: &Self::Symbol) -> (usize, usize, usize) {
