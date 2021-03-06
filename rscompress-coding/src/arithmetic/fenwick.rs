@@ -71,8 +71,8 @@ impl<M: Map> Fenwick<M> {
     }
 
     /// This symbol does not represent the original symbol to be encoded
-    pub(crate) fn get_h_freq(&self, symbol: u16) -> usize {
-        let mut i = symbol as usize;
+    pub(crate) fn get_h_freq(&self, symbol: &M::Input) -> usize {
+        let mut i = self.map.get_index_of(symbol).unwrap_or_else(|| self.map.install(symbol));
         let mut result = 0usize;
 
         while i != 0 {
