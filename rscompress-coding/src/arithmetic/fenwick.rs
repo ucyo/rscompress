@@ -36,6 +36,7 @@ pub trait Map: Default {
 /// The Cartographer maps arbitary alphabets to usize integers.
 /// This way one Fenix Tree implementatino can be used for byte-/character-based,
 /// word-based, or any other type-based alphabets.
+#[derive(Debug)]
 pub struct Cartographer<T> {
     next_symbol: usize,
     map: Mapping<T>
