@@ -88,15 +88,6 @@ impl<M: Map> Fenwick<M> {
     }
 }
 
-/// Mapping of symbols to support arbitary i.e. `u16::MAX` number of entries
-fn map(symbol: u8) -> u16 {
-    if symbol == 0 {
-        NUMBER_SYMBOLS
-    } else {
-        symbol as u16
-    }
-}
-
 /// Backwards calculation of entries needed for retrieving cum. freq. counts in O(log n)
 fn backward(num: usize) -> usize {
     num - (num & (!num + 1))
