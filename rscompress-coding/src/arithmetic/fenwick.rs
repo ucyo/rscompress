@@ -99,7 +99,7 @@ fn forward(num: usize) -> usize {
 }
 
 /// Implementation of defaults
-impl Default for Fenwick {
+impl<M: Map> Default for Fenwick<M> {
     fn default() -> Self {
         Fenwick::new()
     }
