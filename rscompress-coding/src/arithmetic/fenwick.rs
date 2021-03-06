@@ -40,6 +40,42 @@ pub struct Cartographer<T> {
     next_symbol: usize,
     map: Mapping<T>
 }
+
+impl Default for Cartographer<u8> {
+    fn default() -> Self {
+        Cartographer { next_symbol: 1, map: Mapping::<u8>::new()}
+    }
+}
+
+impl Map for Cartographer<u8> {
+    type Input = u8;
+
+    fn new() -> Self {
+        Default::default()
+    }
+    //TODO maybe it is better to return Option<&usize>
+    fn get_index_of(&self, symbol: &Self::Input) -> Option<usize> {
+        Some(*self.map.get(symbol).unwrap())
+    }
+    fn install(&mut self, symbol: &Self::Input) -> usize {
+        self.map.insert(*symbol, self.next_symbol);
+        let result = self.next_symbol;
+        self.next_symbol += 1;
+        result
+    }
+    fn get_ref(&self) -> &Mapping<Self::Input> {
+        &self.map
+    }
+    fn alphabet_size(&self) -> usize {
+        self.map.len()
+    }
+    fn get_symbol_at(&self, ix: usize) -> &Self::Input {
+        let result= self.map.iter()
+        .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
+        result.unwrap()
+    }
+}
+
 /// Fenwick's Tree Structure for implicit O(log n) frequency counts
 ///
 /// Implicit tree structure with O(log n) for updating and retrieving cumulative count for frequencies.
