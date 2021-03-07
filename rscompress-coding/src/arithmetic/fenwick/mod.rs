@@ -96,9 +96,8 @@ impl<M: Map> Statistics for Fenwick<M> {
         let ix = self.map.get_index_of(symbol);
         match ix {
             // Symbol has been seen before
-            Some(v) => {
-                let mut ix = v;
-                while ix <= self.freq.len() {
+            Some(mut ix) => {
+                while ix < self.freq.len() {
                     self.freq[ix] += self.inc;
                     ix = forward(ix);
                 }
