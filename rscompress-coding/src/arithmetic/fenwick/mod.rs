@@ -208,6 +208,14 @@ mod tests {
         let expected: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
         assert_eq!(&expected, f.get_ref());
     }
+    #[test]
+    fn test_binary_fenwick_with_frequencies() {
+        let sym: Vec<u8> =     vec![1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+        let freq: Vec<usize> = vec![1,1,1,4,3,5,2,3,6, 5, 4, 1, 1, 9];
+        let f = fenwick_with_binary_frequencies(freq, sym);
+        let expected: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
+        assert_eq!(&expected, f.get_ref());
+    }
 
 //     #[test]
 //     fn test_normalization() {
