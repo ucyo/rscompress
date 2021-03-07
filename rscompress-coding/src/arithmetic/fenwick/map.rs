@@ -138,7 +138,10 @@ impl Map for Cartographer<String> {
         Default::default()
     }
     fn get_index_of(&self, symbol: &Self::Input) -> Option<usize> {
-        Some(*self.map.get(symbol).unwrap())
+        match self.map.get(symbol) {
+            Some(&v) => Some(v),
+            None => None
+        }
     }
     fn install(&mut self, symbol: &Self::Input) -> usize {
         assert!(self.map.get(symbol).is_none());
