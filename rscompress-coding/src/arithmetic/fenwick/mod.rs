@@ -138,6 +138,47 @@ impl<M: Map> Statistics for Fenwick<M> {
     }
 }
 
+// TODO: Integrate methods into struct [low priority]
+
+pub fn fenwick_with_binary_frequencies(frequencies: Vec<usize>, symbols: Vec<u8>) -> Fenwick<map::Cartographer<u8>> {
+    assert_eq!(frequencies.len(), symbols.len());
+    assert!(frequencies.iter().fold(true, |acc, &s| acc & (s != 0usize)));
+    let mut f = Fenwick::<map::Cartographer<u8>>::new();
+    for (x, mut count) in symbols.iter().zip(frequencies) {
+        while count > 0 {
+            f.update_freq_count(x);
+            count -= 1;
+        }
+    }
+    f
+}
+
+pub fn fenwick_with_string_frequencies(frequencies: Vec<usize>, symbols: Vec<String>) -> Fenwick<map::Cartographer<String>> {
+    assert_eq!(frequencies.len(), symbols.len());
+    assert!(frequencies.iter().fold(true, |acc, &s| acc & (s != 0usize)));
+    let mut f = Fenwick::<map::Cartographer<String>>::new();
+    for (x, mut count) in symbols.iter().zip(frequencies) {
+        while count > 0 {
+            f.update_freq_count(x);
+            count -= 1;
+        }
+    }
+    f
+}
+
+pub fn fenwick_with_vector_frequencies(frequencies: Vec<usize>, symbols: Vec<Vec<u8>>) -> Fenwick<map::Cartographer<Vec<u8>>> {
+    assert_eq!(frequencies.len(), symbols.len());
+    assert!(frequencies.iter().fold(true, |acc, &s| acc & (s != 0usize)));
+    let mut f = Fenwick::<map::Cartographer<Vec<u8>>>::new();
+    for (x, mut count) in symbols.iter().zip(frequencies) {
+        while count > 0 {
+            f.update_freq_count(x);
+            count -= 1;
+        }
+    }
+    f
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
