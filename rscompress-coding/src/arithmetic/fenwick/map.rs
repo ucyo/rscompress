@@ -157,7 +157,7 @@ impl Map for Cartographer<String> {
     }
     fn install(&mut self, symbol: &Self::Input) -> usize {
         assert!(self.map.get(symbol).is_none());
-        let s = symbol.clone().to_string(); // TODO: Due to arg taking a reference, this cloning is needed
+        let s = symbol.clone(); // TODO: Due to arg taking a reference, this cloning is needed
         self.map.insert(s, self.next_symbol);
         let result = self.next_symbol;
         self.next_symbol += 1;
