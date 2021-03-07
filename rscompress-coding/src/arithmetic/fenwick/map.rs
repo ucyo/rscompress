@@ -46,6 +46,7 @@ impl Default for Cartographer<u8> {
     }
 }
 
+/// Implementation of the Map trait for byte/character-based symbols
 impl Map for Cartographer<u8> {
     type Input = u8;
 
@@ -82,6 +83,7 @@ impl Default for Cartographer<Vec<u8>> {
     }
 }
 
+/// Implementation of the Map trait for vector-based symbols
 impl Map for Cartographer<Vec<u8>> {
     type Input = Vec<u8>;
 
@@ -118,6 +120,7 @@ impl Default for Cartographer<String> {
     }
 }
 
+/// Implementation of the Map trait for word-based symbols
 impl Map for Cartographer<String> {
     type Input = String;
 
