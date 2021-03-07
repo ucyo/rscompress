@@ -152,10 +152,19 @@ impl Map for Cartographer<String> {
 mod tests {
     use super::*;
     use rand::{rngs::OsRng, RngCore};
+    use std::collections::HashSet;
 
     #[test]
     fn test_binary_cartographer_init() {
         let bcart = Cartographer::<u8>::new();
+
+        assert_eq!(bcart.alphabet_size(), 0);
+        assert_eq!(bcart.next_symbol, 1);
+    }
+
+    #[test]
+    fn test_vec_cartographer_init() {
+        let bcart = Cartographer::<Vec<u8>>::new();
 
         assert_eq!(bcart.alphabet_size(), 0);
         assert_eq!(bcart.next_symbol, 1);
@@ -181,6 +190,17 @@ mod tests {
     }
 
     #[test]
+    fn test_vec_cartographer_install_symbols_linear() {
+        let mut bcart = Cartographer::<Vec<u8>>::new();
+        for symbol in 0..25u8 {
+            bcart.install(&vec![symbol]);
+        }
+        for symbol in 0..25u8 {
+            assert_eq!(bcart.get_index_of(&vec![symbol]).unwrap(), symbol as usize + 1)
+        }
+    }
+
+    #[test]
     fn test_string_cartographer_install_symbols_linear() {
         let mut bcart = Cartographer::<String>::new();
 
@@ -197,8 +217,10 @@ mod tests {
     #[test]
     fn test_binary_cartographer_install_symbols_random() {
         let mut bcart = Cartographer::<u8>::new();
-        let mut symbols = vec![0u8; 10];
+        let mut symbols = vec![0u8; 1000];
         OsRng.fill_bytes(&mut symbols);
+        // Remove duplicates
+        symbols = symbols.into_iter().collect::<HashSet<_>>().into_iter().collect();
 
         for symbol in symbols.iter() {
             bcart.install(symbol);
@@ -211,10 +233,25 @@ mod tests {
     }
 
     #[test]
+    fn test_vec_cartographer_install_symbols_random() {
+        let mut bcart = Cartographer::<Vec<u8>>::new();
+
+        for num in 0..10 {
+            let mut symbols = vec![0u8; 1000];
+            OsRng.fill_bytes(&mut symbols);
+            symbols = symbols.into_iter().collect::<HashSet<_>>().into_iter().collect();
+            bcart.install(&symbols);
+            assert_eq!(bcart.get_index_of(&symbols).unwrap(), num + 1);
+            assert_eq!(bcart.alphabet_size(), num + 1);
+        }
+    }
+
+    #[test]
     fn test_string_cartographer_install_symbols_random() {
         let mut bcart = Cartographer::<String>::new();
-        let mut symbols = vec![0u8; 10];
+        let mut symbols = vec![0u8; 1000];
         OsRng.fill_bytes(&mut symbols);
+        symbols = symbols.into_iter().collect::<HashSet<_>>().into_iter().collect();
         let symbols: Vec<String> = symbols.iter().map(|s| format!("{}", s)).collect();
 
         for symbol in symbols.iter() {
