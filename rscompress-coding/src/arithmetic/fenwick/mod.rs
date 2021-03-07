@@ -1,5 +1,6 @@
 #![allow(dead_code, unused_variables)]
 use crate::arithmetic::Statistics;
+use log::debug;
 use map::Map;
 
 mod map;
@@ -91,6 +92,7 @@ impl<M: Map> Statistics for Fenwick<M> {
     }
 
     fn update_freq_count(&mut self, symbol: &Self::Symbol) {
+        debug!("Update freq of [{:?}] at {:?}", symbol, self);
         let ix = self.map.get_index_of(symbol);
         match ix {
             // Symbol has been seen before
