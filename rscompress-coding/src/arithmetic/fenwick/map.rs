@@ -19,7 +19,7 @@ pub trait Map: Default {
     fn new() -> Self;
     /// Get index for Symbol
     fn get_index_of(&self, symbol: &Self::Input) -> Option<usize>;
-    /// Associate an index position with a symbol
+    /// Install a symbol by associating an index position with the symbol
     fn install(&mut self, symbol: &Self::Input) -> usize;
     /// Get inner mapping as a reference
     fn get_ref(&self) -> &Mapping<Self::Input>;
