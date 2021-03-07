@@ -75,15 +75,95 @@ impl Map for Cartographer<u8> {
     }
 }
 
+
+impl Default for Cartographer<Vec<u8>> {
+    fn default() -> Self {
+        Cartographer { next_symbol: 1, map: Mapping::<Vec<u8>>::new()}
+    }
+}
+
+impl Map for Cartographer<Vec<u8>> {
+    type Input = Vec<u8>;
+
+    fn new() -> Self {
+        Default::default()
+    }
+    fn get_index_of(&self, symbol: &Self::Input) -> Option<usize> {
+        Some(*self.map.get(symbol).unwrap())
+    }
+    fn install(&mut self, symbol: &Self::Input) -> usize {
+        assert!(self.map.get(symbol).is_none());
+        let s = symbol.clone(); // TODO: Due to arg taking a reference, this cloning is needed
+        self.map.insert(s, self.next_symbol);
+        let result = self.next_symbol;
+        self.next_symbol += 1;
+        result
+    }
+    fn get_ref(&self) -> &Mapping<Self::Input> {
+        &self.map
+    }
+    fn alphabet_size(&self) -> usize {
+        self.map.len()
+    }
+    fn get_symbol_at(&self, ix: usize) -> &Self::Input {
+        let result= self.map.iter()
+        .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
+        result.unwrap()
+    }
+}
+
+impl Default for Cartographer<String> {
+    fn default() -> Self {
+        Cartographer { next_symbol: 1, map: Mapping::<String>::new()}
+    }
+}
+
+impl Map for Cartographer<String> {
+    type Input = String;
+
+    fn new() -> Self {
+        Default::default()
+    }
+    fn get_index_of(&self, symbol: &Self::Input) -> Option<usize> {
+        Some(*self.map.get(symbol).unwrap())
+    }
+    fn install(&mut self, symbol: &Self::Input) -> usize {
+        assert!(self.map.get(symbol).is_none());
+        let s = symbol.clone().to_string();  // TODO: Due to arg taking a reference, this cloning is needed
+        self.map.insert(s, self.next_symbol);
+        let result = self.next_symbol;
+        self.next_symbol += 1;
+        result
+    }
+    fn get_ref(&self) -> &Mapping<Self::Input> {
+        &self.map
+    }
+    fn alphabet_size(&self) -> usize {
+        self.map.len()
+    }
+    fn get_symbol_at(&self, ix: usize) -> &Self::Input {
+        let result= self.map.iter()
+        .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
+        result.unwrap()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-
     use rand::{rngs::OsRng, RngCore};
 
     #[test]
     fn test_binary_cartographer_init() {
         let bcart = Cartographer::<u8>::new();
+
+        assert_eq!(bcart.alphabet_size(), 0);
+        assert_eq!(bcart.next_symbol, 1);
+    }
+
+    #[test]
+    fn test_string_cartographer_init() {
+        let bcart = Cartographer::<String>::new();
 
         assert_eq!(bcart.alphabet_size(), 0);
         assert_eq!(bcart.next_symbol, 1);
@@ -101,10 +181,41 @@ mod tests {
     }
 
     #[test]
+    fn test_string_cartographer_install_symbols_linear() {
+        let mut bcart = Cartographer::<String>::new();
+
+        for symbol in 0..25u8 {
+            let k  = format!("{}", symbol);
+            bcart.install(&k);
+        }
+        for symbol in 0..25u8 {
+            let k  = format!("{}", symbol);
+            assert_eq!(bcart.get_index_of(&k).unwrap(), symbol as usize + 1)
+        }
+    }
+
+    #[test]
     fn test_binary_cartographer_install_symbols_random() {
         let mut bcart = Cartographer::<u8>::new();
         let mut symbols = vec![0u8; 10];
         OsRng.fill_bytes(&mut symbols);
+
+        for symbol in symbols.iter() {
+            bcart.install(symbol);
+        }
+        for symbol in symbols.iter().enumerate() {
+            assert_eq!(bcart.get_index_of(&symbol.1).unwrap(), symbol.0 + 1)
+        }
+        assert_eq!(bcart.alphabet_size(), symbols.len());
+        assert_eq!(*bcart.get_symbol_at(4), symbols[3]);
+    }
+
+    #[test]
+    fn test_string_cartographer_install_symbols_random() {
+        let mut bcart = Cartographer::<String>::new();
+        let mut symbols = vec![0u8; 10];
+        OsRng.fill_bytes(&mut symbols);
+        let symbols: Vec<String> = symbols.iter().map(|s| format!("{}", s)).collect();
 
         for symbol in symbols.iter() {
             bcart.install(symbol);
