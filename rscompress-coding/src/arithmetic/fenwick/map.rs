@@ -178,6 +178,33 @@ mod tests {
         assert_eq!(bcart.next_symbol, 1);
     }
 
+
+    #[test]
+    #[should_panic]
+    fn test_binary_cartographer_duplicate_insert() {
+        let mut bcart = Cartographer::<u8>::new();
+        for symbol in vec![34, 34] {
+            bcart.install(&symbol);
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_string_cartographer_duplicate_insert() {
+        let mut bcart = Cartographer::<String>::new();
+        for symbol in vec!["34".to_string(), "34".to_string()] {
+            bcart.install(&symbol);
+        }
+    }
+    #[test]
+    #[should_panic]
+    fn test_vec_cartographer_duplicate_insert() {
+        let mut bcart = Cartographer::<Vec<u8>>::new();
+        for symbol in vec![vec![3,4,5], vec![3,4,5]] {
+            bcart.install(&symbol);
+        }
+    }
+
     #[test]
     fn test_binary_cartographer_install_symbols_linear() {
         let mut bcart = Cartographer::<u8>::new();
