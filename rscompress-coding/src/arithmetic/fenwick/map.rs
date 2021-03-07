@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Debug};
 
 /// Mapping of arbitary elements to index position for frequency counts
 pub type Mapping<T> = HashMap<T, usize>;
@@ -13,8 +13,8 @@ pub type Mapping<T> = HashMap<T, usize>;
 /// This trait represents this mapping.
 /// The associated type defines the symbol type and can be `u8` (character-based),
 /// `String` or `Vec<u8>` (word-based), or anything else.
-pub trait Map: Default {
-    type Input;
+pub trait Map: Default + Debug {
+    type Input: Debug;
     /// Create new mapping
     fn new() -> Self;
     /// Get index for Symbol
