@@ -40,6 +40,12 @@ pub struct Cartographer<T> {
     map: Mapping<T>
 }
 
+impl<T> Cartographer<T> {
+    pub fn next_symbol(&self) -> usize {
+        self.next_symbol
+    }
+}
+
 impl Default for Cartographer<u8> {
     fn default() -> Self {
         Cartographer { next_symbol: 1, map: Mapping::<u8>::new()}

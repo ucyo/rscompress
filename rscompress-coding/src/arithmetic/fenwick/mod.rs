@@ -149,6 +149,7 @@ mod tests {
 
         assert_eq!(f.get_ref().len(), 1);
         assert_eq!(f.map.get_ref().len(), 0);
+        assert_eq!(f.map.next_symbol(), 1);
         assert_eq!(f.get_ref(), &vec![0usize]);
     }
 
