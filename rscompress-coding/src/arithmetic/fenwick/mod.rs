@@ -140,7 +140,17 @@ impl<M: Map> Statistics for Fenwick<M> {
 
 #[cfg(test)]
 mod tests {
-    // use super::*;
+    use super::*;
+    use map::Cartographer;
+
+    #[test]
+    fn test_binary_fenwick_init() {
+        let f = Fenwick::<Cartographer<u8>>::new();
+
+        assert_eq!(f.get_ref().len(), 1);
+        assert_eq!(f.map.get_ref().len(), 0);
+        assert_eq!(f.get_ref(), &vec![0usize]);
+    }
 
 //     #[test]
 //     fn test_normalization() {
