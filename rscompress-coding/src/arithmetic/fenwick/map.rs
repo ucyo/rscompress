@@ -37,7 +37,7 @@ pub trait Map: Default + Debug {
 #[derive(Debug)]
 pub struct Cartographer<T> {
     next_symbol: usize,
-    map: Mapping<T>
+    map: Mapping<T>,
 }
 
 impl<T> Cartographer<T> {
@@ -48,7 +48,10 @@ impl<T> Cartographer<T> {
 
 impl Default for Cartographer<u8> {
     fn default() -> Self {
-        Cartographer { next_symbol: 1, map: Mapping::<u8>::new()}
+        Cartographer {
+            next_symbol: 1,
+            map: Mapping::<u8>::new(),
+        }
     }
 }
 
@@ -63,7 +66,7 @@ impl Map for Cartographer<u8> {
         let sym = self.map.get(symbol);
         match sym {
             Some(&v) => Some(v),
-            None => None
+            None => None,
         }
     }
     fn install(&mut self, symbol: &Self::Input) -> usize {
@@ -80,16 +83,20 @@ impl Map for Cartographer<u8> {
         self.map.len()
     }
     fn get_symbol_at(&self, ix: usize) -> &Self::Input {
-        let result= self.map.iter()
-        .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
+        let result = self
+            .map
+            .iter()
+            .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
         result.unwrap()
     }
 }
 
-
 impl Default for Cartographer<Vec<u8>> {
     fn default() -> Self {
-        Cartographer { next_symbol: 1, map: Mapping::<Vec<u8>>::new()}
+        Cartographer {
+            next_symbol: 1,
+            map: Mapping::<Vec<u8>>::new(),
+        }
     }
 }
 
@@ -118,15 +125,20 @@ impl Map for Cartographer<Vec<u8>> {
         self.map.len()
     }
     fn get_symbol_at(&self, ix: usize) -> &Self::Input {
-        let result= self.map.iter()
-        .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
+        let result = self
+            .map
+            .iter()
+            .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
         result.unwrap()
     }
 }
 
 impl Default for Cartographer<String> {
     fn default() -> Self {
-        Cartographer { next_symbol: 1, map: Mapping::<String>::new()}
+        Cartographer {
+            next_symbol: 1,
+            map: Mapping::<String>::new(),
+        }
     }
 }
 
@@ -140,12 +152,12 @@ impl Map for Cartographer<String> {
     fn get_index_of(&self, symbol: &Self::Input) -> Option<usize> {
         match self.map.get(symbol) {
             Some(&v) => Some(v),
-            None => None
+            None => None,
         }
     }
     fn install(&mut self, symbol: &Self::Input) -> usize {
         assert!(self.map.get(symbol).is_none());
-        let s = symbol.clone().to_string();  // TODO: Due to arg taking a reference, this cloning is needed
+        let s = symbol.clone().to_string(); // TODO: Due to arg taking a reference, this cloning is needed
         self.map.insert(s, self.next_symbol);
         let result = self.next_symbol;
         self.next_symbol += 1;
@@ -158,8 +170,10 @@ impl Map for Cartographer<String> {
         self.map.len()
     }
     fn get_symbol_at(&self, ix: usize) -> &Self::Input {
-        let result= self.map.iter()
-        .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
+        let result = self
+            .map
+            .iter()
+            .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
         result.unwrap()
     }
 }
@@ -194,7 +208,6 @@ mod tests {
         assert_eq!(bcart.next_symbol, 1);
     }
 
-
     #[test]
     #[should_panic]
     fn test_binary_cartographer_duplicate_insert() {
@@ -216,7 +229,7 @@ mod tests {
     #[should_panic]
     fn test_vec_cartographer_duplicate_insert() {
         let mut bcart = Cartographer::<Vec<u8>>::new();
-        for symbol in vec![vec![3,4,5], vec![3,4,5]] {
+        for symbol in vec![vec![3, 4, 5], vec![3, 4, 5]] {
             bcart.install(&symbol);
         }
     }
@@ -239,7 +252,10 @@ mod tests {
             bcart.install(&vec![symbol]);
         }
         for symbol in 0..25u8 {
-            assert_eq!(bcart.get_index_of(&vec![symbol]).unwrap(), symbol as usize + 1)
+            assert_eq!(
+                bcart.get_index_of(&vec![symbol]).unwrap(),
+                symbol as usize + 1
+            )
         }
     }
 
@@ -248,11 +264,11 @@ mod tests {
         let mut bcart = Cartographer::<String>::new();
 
         for symbol in 0..25u8 {
-            let k  = format!("{}", symbol);
+            let k = format!("{}", symbol);
             bcart.install(&k);
         }
         for symbol in 0..25u8 {
-            let k  = format!("{}", symbol);
+            let k = format!("{}", symbol);
             assert_eq!(bcart.get_index_of(&k).unwrap(), symbol as usize + 1)
         }
     }
@@ -263,7 +279,11 @@ mod tests {
         let mut symbols = vec![0u8; 1000];
         OsRng.fill_bytes(&mut symbols);
         // Remove duplicates
-        symbols = symbols.into_iter().collect::<HashSet<_>>().into_iter().collect();
+        symbols = symbols
+            .into_iter()
+            .collect::<HashSet<_>>()
+            .into_iter()
+            .collect();
 
         for symbol in symbols.iter() {
             bcart.install(symbol);
@@ -282,7 +302,11 @@ mod tests {
         for num in 0..10 {
             let mut symbols = vec![0u8; 1000];
             OsRng.fill_bytes(&mut symbols);
-            symbols = symbols.into_iter().collect::<HashSet<_>>().into_iter().collect();
+            symbols = symbols
+                .into_iter()
+                .collect::<HashSet<_>>()
+                .into_iter()
+                .collect();
             bcart.install(&symbols);
             assert_eq!(bcart.get_index_of(&symbols).unwrap(), num + 1);
             assert_eq!(bcart.alphabet_size(), num + 1);
@@ -294,7 +318,11 @@ mod tests {
         let mut bcart = Cartographer::<String>::new();
         let mut symbols = vec![0u8; 1000];
         OsRng.fill_bytes(&mut symbols);
-        symbols = symbols.into_iter().collect::<HashSet<_>>().into_iter().collect();
+        symbols = symbols
+            .into_iter()
+            .collect::<HashSet<_>>()
+            .into_iter()
+            .collect();
         let symbols: Vec<String> = symbols.iter().map(|s| format!("{}", s)).collect();
 
         for symbol in symbols.iter() {
