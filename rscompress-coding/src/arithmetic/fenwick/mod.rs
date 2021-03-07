@@ -107,24 +107,23 @@ impl<M: Map> Statistics for Fenwick<M> {
                 assert_eq!(self.map.alphabet_size() + 1, self.freq.len());
                 let n = self.map.install(symbol);
                 // Add the correct log freq counts
+                // See paper page 267, section 3.2, paragraph 2
                 if n % 2 == 1 {
                     self.freq.push(1);
-                } else if n % 4 == 2 {
-                    self.freq.push(1 + self.freq[n-1]);
-                } else if n % 8 == 4 {
-                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]);
-                } else if n % 16 == 8 {
-                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4]);
-                } else if n % 32 == 16 {
-                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4] + self.freq[n - 8]);
-                } else if n % 64 == 32 {
-                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4] + self.freq[n - 8]+ self.freq[n - 16]);
-                } else if n % 128 == 64 {
-                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4] + self.freq[n - 8]+ self.freq[n - 16] + self.freq[n - 32]);
-                } else if n % 256 == 128 {
-                    self.freq.push(1 + self.freq[n - 1] + self.freq[n - 2]+ self.freq[n - 4] + self.freq[n - 8]+ self.freq[n - 16] + self.freq[n - 32] + self.freq[n - 64]);
                 } else {
-                    panic!("Too many symbols. Need to be automated to a loop")
+                    let mut pow = 2u32;
+                    loop {
+                        if (n % 2usize.pow(pow)) == 2usize.pow(pow - 1) {
+                            let mut sum = 1usize;
+                            for j in 0..pow-1 {
+                                sum += self.freq[n - 2usize.pow(j)]
+                            }
+                            self.freq.push(sum);
+                            break;
+                        } else {
+                            pow += 1;
+                        }
+                    }
                 }
             }
         };
