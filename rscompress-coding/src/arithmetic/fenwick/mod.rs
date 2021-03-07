@@ -217,6 +217,30 @@ mod tests {
         assert_eq!(&expected, f.get_ref());
     }
 
+    #[test]
+    fn test_string_fenwick_with_frequencies() {
+        let sym: Vec<String> =     vec![
+            "Sometimes I've believed as many as six impossible things".to_string(),
+            "Who in the world am I? Ah, that's the great puzzle".to_string(),
+            "Curiouser and curiouser!".to_string(),
+            "How long is forever?".to_string(),
+            "Sometimes, just one second".to_string(),
+            "Why it's simply impassible!".to_string(),
+            "Why, don't you mean impossible?".to_string(),
+            "Would you tell me, please, which way I ought to go from here?".to_string(),
+            "That depends a good deal on where you want to get to".to_string(),
+            "I don't much care where".to_string(),
+            "Then it doesn't much matter which way you go".to_string(),
+            "So long as I get somewhere".to_string(),
+            "Oh, you're sure to do that, if only you walk long enough".to_string(),
+            "I knew who I was this morning, but I've changed a few times since then".to_string(),
+            ];
+        let freq: Vec<usize> = vec![1,1,1,4,3,5,2,3,6, 5, 4, 1, 1, 9];
+        let f = fenwick_with_string_frequencies(freq, sym);
+        let expected: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
+        assert_eq!(&expected, f.get_ref());
+    }
+
 //     #[test]
 //     fn test_normalization() {
 //         let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10]; // sum = 46
