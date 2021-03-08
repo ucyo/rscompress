@@ -3,8 +3,9 @@ use crate::arithmetic::Statistics;
 use log::debug;
 use map::Map;
 use std::collections::HashSet;
+use crate::arithmetic::StatisticsError;
 
-mod map;
+pub(crate) mod map;
 
 /// Fenwick's Tree Structure for implicit O(log n) frequency counts
 ///
@@ -77,7 +78,7 @@ impl<M: Map> Statistics for Fenwick<M> {
         self.get_h_freq(self.map.alphabet_size())
     }
 
-    fn get_symbol(&self, target: usize) -> &Self::Symbol {
+    fn get_symbol(&self, target: usize) -> Result<&Self::Symbol, StatisticsError> {
         let mut ix = 0usize;
         let mut t = target;
         let mut mid = 2usize.pow((self.map.alphabet_size() as f32).log2().floor() as u32);
@@ -89,12 +90,12 @@ impl<M: Map> Statistics for Fenwick<M> {
             }
             mid /= 2;
         }
-        self.map.get_symbol_at(ix)
+        Ok(self.map.get_symbol_at(ix)?)
     }
 
-    fn update_freq_count(&mut self, symbol: &Self::Symbol) {
+    fn update_freq_count(&mut self, symbol: &Self::Symbol) -> Result<(), StatisticsError>{
         debug!("Update freq of [{:?}] at {:?}", symbol, self);
-        let ix = self.map.get_index_of(symbol);
+        let ix = self.map.get_index_of(symbol).ok();
         match ix {
             // Symbol has been seen before
             Some(mut ix) => {
@@ -128,6 +129,7 @@ impl<M: Map> Statistics for Fenwick<M> {
                 }
             }
         };
+        Ok(())
     }
 
     fn get_freq_bounds(&self, symbol: &Self::Symbol) -> (usize, usize, usize) {
@@ -138,10 +140,11 @@ impl<M: Map> Statistics for Fenwick<M> {
         (lower, higher, total)
     }
 
-    fn feed(&mut self, data: &[Self::Symbol]) {
+    fn feed(&mut self, data: &[Self::Symbol]) -> Result<(), StatisticsError> {
         for symbol in data {
-            self.update_freq_count(symbol);
+            self.update_freq_count(symbol)?;
         }
+        Ok(())
     }
 }
 
@@ -157,7 +160,7 @@ pub fn fenwick_with_binary_frequencies(
     let mut f = Fenwick::<map::Cartographer<u8>>::new();
     for (x, mut count) in symbols.iter().zip(frequencies) {
         while count > 0 {
-            f.update_freq_count(x);
+            f.update_freq_count(x).unwrap();
             count -= 1;
         }
     }
@@ -174,7 +177,7 @@ pub fn fenwick_with_string_frequencies(
     let mut f = Fenwick::<map::Cartographer<String>>::new();
     for (x, mut count) in symbols.iter().zip(frequencies) {
         while count > 0 {
-            f.update_freq_count(x);
+            f.update_freq_count(x).unwrap();
             count -= 1;
         }
     }
@@ -191,7 +194,7 @@ pub fn fenwick_with_vector_frequencies(
     let mut f = Fenwick::<map::Cartographer<Vec<u8>>>::new();
     for (x, mut count) in symbols.iter().zip(frequencies) {
         while count > 0 {
-            f.update_freq_count(x);
+            f.update_freq_count(x).unwrap();
             count -= 1;
         }
     }
@@ -226,7 +229,7 @@ mod tests {
         let freq: Vec<usize> = vec![1, 1, 1, 4, 3, 5, 2, 3, 6, 5, 4, 1, 1, 9];
         for (x, mut count) in sym.iter().zip(freq) {
             while count > 0 {
-                f.update_freq_count(x);
+                f.update_freq_count(x).unwrap();
                 count -= 1;
             }
         }
@@ -322,12 +325,12 @@ mod tests {
         let mut f = get_example_from_paper();
 
         assert_eq!(f.get_h_freq(7), 17);
-        f.update_freq_count(&7);
-        f.update_freq_count(&7);
+        f.update_freq_count(&7).unwrap();
+        f.update_freq_count(&7).unwrap();
         assert_eq!(f.get_h_freq(7), 19);
-        f.update_freq_count(&3);
-        f.update_freq_count(&8);
-        f.update_freq_count(&12);
+        f.update_freq_count(&3).unwrap();
+        f.update_freq_count(&8).unwrap();
+        f.update_freq_count(&12).unwrap();
         assert_eq!(f.get_h_freq(3), 4);
         assert_eq!(f.get_h_freq(8), 24);
         assert_eq!(f.get_h_freq(12), 41);
@@ -336,15 +339,15 @@ mod tests {
     #[test]
     fn test_symbol_recovery() {
         let f = get_example_from_paper();
-        assert_eq!(f.get_symbol(28), &9u8);
-        assert_eq!(f.get_symbol(5), &3u8);
-        assert_eq!(f.get_symbol(13), &5u8);
-        assert_eq!(f.get_symbol(36), &12u8);
-        assert_eq!(f.get_symbol(40), &13u8);
-        assert_eq!(f.get_symbol(41), &13u8);
-        assert_eq!(f.get_symbol(17), &7u8);
-        assert_eq!(f.get_symbol(18), &7u8);
-        assert_eq!(f.get_symbol(19), &7u8);
+        assert_eq!(f.get_symbol(28).unwrap(), &9u8);
+        assert_eq!(f.get_symbol(5).unwrap(), &3u8);
+        assert_eq!(f.get_symbol(13).unwrap(), &5u8);
+        assert_eq!(f.get_symbol(36).unwrap(), &12u8);
+        assert_eq!(f.get_symbol(40).unwrap(), &13u8);
+        assert_eq!(f.get_symbol(41).unwrap(), &13u8);
+        assert_eq!(f.get_symbol(17).unwrap(), &7u8);
+        assert_eq!(f.get_symbol(18).unwrap(), &7u8);
+        assert_eq!(f.get_symbol(19).unwrap(), &7u8);
     }
 
     #[test]
@@ -355,7 +358,7 @@ mod tests {
         ];
         let expected = get_example_from_paper();
         let mut f = Fenwick::<Cartographer<u8>>::new();
-        f.feed(&data);
+        f.feed(&data).unwrap();
         assert_eq!(f.get_ref(), expected.get_ref())
     }
 }
