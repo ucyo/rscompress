@@ -12,10 +12,11 @@ mod fenwick;
 trait Statistics {
     type Symbol;
     fn get_freq_bounds(&self, symbol: &Self::Symbol) -> (usize, usize, usize);
-    fn update_freq_count(&mut self, symbol: &Self::Symbol);
-    fn get_symbol(&self, target: usize) -> &Self::Symbol;
+    fn update_freq_count(&mut self, symbol: &Self::Symbol) -> Result<(), StatisticsError>;
+    fn get_symbol(&self, target: usize) -> Result<&Self::Symbol, StatisticsError>;
     fn get_total(&self) -> usize;
-    fn feed(&mut self, data: &[Self::Symbol]);
+    fn feed(&mut self, data: &[Self::Symbol]) -> Result<(), StatisticsError>;
+}
 
 #[derive(Debug)]
 pub enum StatisticsError {
