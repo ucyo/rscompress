@@ -178,6 +178,29 @@ impl Map for Cartographer<String> {
             .iter()
             .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
         result.unwrap()
+}
+#[derive(Debug)]
+pub enum MapError {
+    /// Index for Symbol not found
+    UnknownSymbolError,
+    /// Symbol for Index not found
+    UnknownIndexError,
+}
+impl Display for MapError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match *self {
+            MapError::UnknownIndexError => write!(f, "Can not find Symbol for index"),
+            MapError::UnknownSymbolError => write!(f, "Can not find Index for symbol"),
+        }
+    }
+}
+
+impl Error for MapError {
+    fn description(&self) -> &str {
+        match *self {
+            MapError::UnknownIndexError => "Index not found",
+            MapError::UnknownSymbolError => "Symbol not found",
+        }
     }
 }
 
