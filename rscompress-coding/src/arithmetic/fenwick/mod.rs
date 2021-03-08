@@ -273,25 +273,21 @@ mod tests {
             assert_eq!(f.get_total(), 11);
         }
 
-    //     #[test]
-    //     fn test_backwards() {
-    //         let f = Fenwick::new();
+        #[test]
+        fn test_backwards() {
+            assert_eq!(backward(13), 12);
+            assert_eq!(backward(8), 0);
+            assert_eq!(backward(2), 0);
+            assert_eq!(backward(9), 8);
+            assert_eq!(backward(2), 0);
+        }
 
-    //         assert_eq!(backward(13), 12);
-    //         assert_eq!(backward(8), 0);
-    //         assert_eq!(backward(2), 0);
-    //         assert_eq!(backward(9), 8);
-    //         assert_eq!(backward(2), 0);
-    //     }
-
-    //     #[test]
-    //     fn test_forward() {
-    //         let f = Fenwick::new();
-
-    //         assert_eq!(forward(13), 14);
-    //         assert_eq!(forward(14), 16);
-    //         assert_eq!(forward(16), 32);
-    //     }
+        #[test]
+        fn test_forward() {
+            assert_eq!(forward(13), 14);
+            assert_eq!(forward(14), 16);
+            assert_eq!(forward(16), 32);
+        }
 
     //     #[test]
     //     fn test_single_frequency_calculation() {
