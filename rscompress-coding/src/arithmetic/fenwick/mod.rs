@@ -197,6 +197,12 @@ mod tests {
     use super::*;
     use map::Cartographer;
 
+    fn get_example_from_paper() -> Fenwick<Cartographer<u8>> {
+        let sym: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+        let freq: Vec<usize> = vec![1, 1, 1, 4, 3, 5, 2, 3, 6, 5, 4, 1, 1, 9];
+        fenwick_with_binary_frequencies(freq, sym)
+    }
+
     #[test]
     fn test_binary_fenwick_init() {
         let f = Fenwick::<Cartographer<u8>>::new();
@@ -223,9 +229,7 @@ mod tests {
     }
     #[test]
     fn test_binary_fenwick_with_frequencies() {
-        let sym: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-        let freq: Vec<usize> = vec![1, 1, 1, 4, 3, 5, 2, 3, 6, 5, 4, 1, 1, 9];
-        let f = fenwick_with_binary_frequencies(freq, sym);
+        let f = get_example_from_paper();
         let expected: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
         assert_eq!(&expected, f.get_ref());
     }
@@ -256,12 +260,10 @@ mod tests {
 
         #[test]
         fn test_normalization_and_count() {
-            let sym: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-            let freq: Vec<usize> = vec![1, 1, 1, 4, 3, 5, 2, 3, 6, 5, 4, 1, 1, 9];
+            let mut f = get_example_from_paper();
             let norm1: Vec<usize> = vec![0, 1, 1, 1, 3, 1, 4, 1, 10, 3, 5, 2, 8, 1, 5]; // sum = 23
             let norm2: Vec<usize> = vec![0, 1, 1, 1, 1, 1, 2, 1, 5, 1, 2, 1, 4, 1, 2]; // sum = 11
 
-            let mut f = fenwick_with_binary_frequencies(freq, sym);
             assert_eq!(f.get_total(), 46);
             f.normalize();
             assert_eq!(f.freq, norm1);
