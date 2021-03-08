@@ -1,8 +1,8 @@
 #![allow(dead_code, unused_variables)]
-use std::collections::HashSet;
 use crate::arithmetic::Statistics;
 use log::debug;
 use map::Map;
+use std::collections::HashSet;
 
 mod map;
 
@@ -258,86 +258,86 @@ mod tests {
         assert_eq!(&expected, f.get_ref());
     }
 
-        #[test]
-        fn test_normalization_and_count() {
-            let mut f = get_example_from_paper();
-            let norm1: Vec<usize> = vec![0, 1, 1, 1, 3, 1, 4, 1, 10, 3, 5, 2, 8, 1, 5]; // sum = 23
-            let norm2: Vec<usize> = vec![0, 1, 1, 1, 1, 1, 2, 1, 5, 1, 2, 1, 4, 1, 2]; // sum = 11
+    #[test]
+    fn test_normalization_and_count() {
+        let mut f = get_example_from_paper();
+        let norm1: Vec<usize> = vec![0, 1, 1, 1, 3, 1, 4, 1, 10, 3, 5, 2, 8, 1, 5]; // sum = 23
+        let norm2: Vec<usize> = vec![0, 1, 1, 1, 1, 1, 2, 1, 5, 1, 2, 1, 4, 1, 2]; // sum = 11
 
-            assert_eq!(f.get_total(), 46);
-            f.normalize();
-            assert_eq!(f.freq, norm1);
-            assert_eq!(f.get_total(), 23);
-            f.normalize();
-            assert_eq!(f.freq, norm2);
-            assert_eq!(f.get_total(), 11);
-        }
+        assert_eq!(f.get_total(), 46);
+        f.normalize();
+        assert_eq!(f.freq, norm1);
+        assert_eq!(f.get_total(), 23);
+        f.normalize();
+        assert_eq!(f.freq, norm2);
+        assert_eq!(f.get_total(), 11);
+    }
 
-        #[test]
-        fn test_backwards() {
-            assert_eq!(backward(13), 12);
-            assert_eq!(backward(8), 0);
-            assert_eq!(backward(2), 0);
-            assert_eq!(backward(9), 8);
-            assert_eq!(backward(2), 0);
-        }
+    #[test]
+    fn test_backwards() {
+        assert_eq!(backward(13), 12);
+        assert_eq!(backward(8), 0);
+        assert_eq!(backward(2), 0);
+        assert_eq!(backward(9), 8);
+        assert_eq!(backward(2), 0);
+    }
 
-        #[test]
-        fn test_forward() {
-            assert_eq!(forward(13), 14);
-            assert_eq!(forward(14), 16);
-            assert_eq!(forward(16), 32);
-        }
+    #[test]
+    fn test_forward() {
+        assert_eq!(forward(13), 14);
+        assert_eq!(forward(14), 16);
+        assert_eq!(forward(16), 32);
+    }
 
-        #[test]
-        fn test_single_frequency_calculation() {
-            let f = get_example_from_paper();
+    #[test]
+    fn test_single_frequency_calculation() {
+        let f = get_example_from_paper();
 
-            assert_eq!(f.get_h_freq(1), 1);
-            assert_eq!(f.get_h_freq(9), 26);
-            assert_eq!(f.get_h_freq(7), 17);
-            assert_eq!(f.get_h_freq(8), 20);
-            assert_eq!(f.get_h_freq(12), 36);
-            assert_eq!(f.get_h_freq(14), 46);
-        }
+        assert_eq!(f.get_h_freq(1), 1);
+        assert_eq!(f.get_h_freq(9), 26);
+        assert_eq!(f.get_h_freq(7), 17);
+        assert_eq!(f.get_h_freq(8), 20);
+        assert_eq!(f.get_h_freq(12), 36);
+        assert_eq!(f.get_h_freq(14), 46);
+    }
 
-        #[test]
-        fn test_frequency_tuple_calculation() {
-            let f = get_example_from_paper();
+    #[test]
+    fn test_frequency_tuple_calculation() {
+        let f = get_example_from_paper();
 
-            assert_eq!(f.get_freq_bounds(&8), (17, 20, 46));
-            assert_eq!(f.get_freq_bounds(&3), (2, 3, 46));
-            assert_eq!(f.get_freq_bounds(&10), (26, 31, 46));
-            assert_eq!(f.get_freq_bounds(&14), (37, 46, 46));
-        }
+        assert_eq!(f.get_freq_bounds(&8), (17, 20, 46));
+        assert_eq!(f.get_freq_bounds(&3), (2, 3, 46));
+        assert_eq!(f.get_freq_bounds(&10), (26, 31, 46));
+        assert_eq!(f.get_freq_bounds(&14), (37, 46, 46));
+    }
 
-        #[test]
-        fn test_frequency_increment() {
-            let mut f = get_example_from_paper();
+    #[test]
+    fn test_frequency_increment() {
+        let mut f = get_example_from_paper();
 
-            assert_eq!(f.get_h_freq(7), 17);
-            f.update_freq_count(&7);
-            f.update_freq_count(&7);
-            assert_eq!(f.get_h_freq(7), 19);
-            f.update_freq_count(&3);
-            f.update_freq_count(&8);
-            f.update_freq_count(&12);
-            assert_eq!(f.get_h_freq(3), 4);
-            assert_eq!(f.get_h_freq(8), 24);
-            assert_eq!(f.get_h_freq(12), 41);
-        }
+        assert_eq!(f.get_h_freq(7), 17);
+        f.update_freq_count(&7);
+        f.update_freq_count(&7);
+        assert_eq!(f.get_h_freq(7), 19);
+        f.update_freq_count(&3);
+        f.update_freq_count(&8);
+        f.update_freq_count(&12);
+        assert_eq!(f.get_h_freq(3), 4);
+        assert_eq!(f.get_h_freq(8), 24);
+        assert_eq!(f.get_h_freq(12), 41);
+    }
 
-        #[test]
-        fn test_symbol_recovery() {
-            let f = get_example_from_paper();
-            assert_eq!(f.get_symbol(28), &9u8);
-            assert_eq!(f.get_symbol(5), &3u8);
-            assert_eq!(f.get_symbol(13), &5u8);
-            assert_eq!(f.get_symbol(36), &12u8);
-            assert_eq!(f.get_symbol(40), &13u8);
-            assert_eq!(f.get_symbol(41), &13u8);
-            assert_eq!(f.get_symbol(17), &7u8);
-            assert_eq!(f.get_symbol(18), &7u8);
-            assert_eq!(f.get_symbol(19), &7u8);
-        }
+    #[test]
+    fn test_symbol_recovery() {
+        let f = get_example_from_paper();
+        assert_eq!(f.get_symbol(28), &9u8);
+        assert_eq!(f.get_symbol(5), &3u8);
+        assert_eq!(f.get_symbol(13), &5u8);
+        assert_eq!(f.get_symbol(36), &12u8);
+        assert_eq!(f.get_symbol(40), &13u8);
+        assert_eq!(f.get_symbol(41), &13u8);
+        assert_eq!(f.get_symbol(17), &7u8);
+        assert_eq!(f.get_symbol(18), &7u8);
+        assert_eq!(f.get_symbol(19), &7u8);
+    }
 }
