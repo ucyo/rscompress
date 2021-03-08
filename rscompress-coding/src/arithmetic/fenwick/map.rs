@@ -8,7 +8,7 @@ pub type Mapping<T> = HashMap<T, usize>;
 /// The Fenwick Tree saves each symbol in an array.
 /// The index position of the symbol is not changed.
 /// For character-based symbols the number of symbols is pre-defined i.e. 256.
-/// But for word-based symbols the alphabet can of arbitary length.
+/// But for word-based symbols the alphabet can be of arbitary length.
 /// Therefore a mapping is needed from word to symbol index.
 /// This trait represents this mapping.
 /// The associated type defines the symbol type and can be `u8` (character-based),
@@ -32,15 +32,18 @@ pub trait Map: Default + Debug {
 /// Maps arbitary alphabets to usize and back
 ///
 /// The Cartographer maps arbitary alphabets to usize integers.
-/// This way one Fenix Tree implementatino can be used for byte-/character-based,
-/// word-based, or any other type-based alphabets.
+/// This way one Fenix Tree implementation can be used for byte-/character-based,
+/// word-based, or any arbitary type-based alphabets.
 #[derive(Debug)]
 pub struct Cartographer<T> {
+    /// Next usize to be mapped to next unknown symbol
     next_symbol: usize,
+    /// Internal mapping
     map: Mapping<T>,
 }
 
 impl<T> Cartographer<T> {
+    /// Return next symbol to be mapped to next symbol
     pub fn next_symbol(&self) -> usize {
         self.next_symbol
     }
