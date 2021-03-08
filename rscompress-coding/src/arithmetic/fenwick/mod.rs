@@ -289,80 +289,55 @@ mod tests {
             assert_eq!(forward(16), 32);
         }
 
-    //     #[test]
-    //     fn test_single_frequency_calculation() {
-    //         let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
-    //         let f = Fenwick::with_frequencies(frequencies);
+        #[test]
+        fn test_single_frequency_calculation() {
+            let f = get_example_from_paper();
 
-    //         assert_eq!(f.get_h_freq(1), 1);
-    //         assert_eq!(f.get_h_freq(9), 26);
-    //         assert_eq!(f.get_h_freq(7), 17);
-    //         assert_eq!(f.get_h_freq(8), 20);
-    //         assert_eq!(f.get_h_freq(12), 36);
-    //         assert_eq!(f.get_h_freq(14), 46);
-    //     }
+            assert_eq!(f.get_h_freq(1), 1);
+            assert_eq!(f.get_h_freq(9), 26);
+            assert_eq!(f.get_h_freq(7), 17);
+            assert_eq!(f.get_h_freq(8), 20);
+            assert_eq!(f.get_h_freq(12), 36);
+            assert_eq!(f.get_h_freq(14), 46);
+        }
 
-    //     #[test]
-    //     fn test_internal_mapping() {
-    //         assert_eq!(map(16), 16);
-    //         assert_eq!(map(0), NUMBER_SYMBOLS);
-    //     }
+        #[test]
+        fn test_frequency_tuple_calculation() {
+            let f = get_example_from_paper();
 
-    //     #[test]
-    //     fn test_frequency_tuple_calculation() {
-    //         let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
-    //         let f = Fenwick::with_frequencies(frequencies);
+            assert_eq!(f.get_freq_bounds(&8), (17, 20, 46));
+            assert_eq!(f.get_freq_bounds(&3), (2, 3, 46));
+            assert_eq!(f.get_freq_bounds(&10), (26, 31, 46));
+            assert_eq!(f.get_freq_bounds(&14), (37, 46, 46));
+        }
 
-    //         assert_eq!(f.get_freq_bounds(8), (17, 20, 46));
-    //         assert_eq!(f.get_freq_bounds(3), (2, 3, 46));
-    //         assert_eq!(f.get_freq_bounds(10), (26, 31, 46));
-    //         assert_eq!(f.get_freq_bounds(14), (37, 46, 46));
-    //     }
+        #[test]
+        fn test_frequency_increment() {
+            let mut f = get_example_from_paper();
 
-    //     #[test]
-    //     fn test_frequency_increment() {
-    //         let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
-    //         let mut f = Fenwick::with_frequencies(frequencies);
+            assert_eq!(f.get_h_freq(7), 17);
+            f.update_freq_count(&7);
+            f.update_freq_count(&7);
+            assert_eq!(f.get_h_freq(7), 19);
+            f.update_freq_count(&3);
+            f.update_freq_count(&8);
+            f.update_freq_count(&12);
+            assert_eq!(f.get_h_freq(3), 4);
+            assert_eq!(f.get_h_freq(8), 24);
+            assert_eq!(f.get_h_freq(12), 41);
+        }
 
-    //         assert_eq!(f.get_h_freq(7), 17);
-    //         f.update_freq_count(7);
-    //         f.update_freq_count(7);
-    //         assert_eq!(f.get_h_freq(7), 19);
-    //         f.update_freq_count(3);
-    //         f.update_freq_count(8);
-    //         f.update_freq_count(12);
-    //         assert_eq!(f.get_h_freq(3), 4);
-    //         assert_eq!(f.get_h_freq(8), 24);
-    //         assert_eq!(f.get_h_freq(12), 41);
-    //     }
-
-    //     #[test]
-    //     fn test_symbol_recovery() {
-    //         let frequencies: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
-    //         let f = Fenwick::with_frequencies(frequencies);
-    //         assert_eq!(f.get_symbol(28), 9);
-    //         assert_eq!(f.get_symbol(5), 3);
-    //         assert_eq!(f.get_symbol(13), 5);
-    //         assert_eq!(f.get_symbol(36), 12);
-    //         assert_eq!(f.get_symbol(40), 13);
-    //         assert_eq!(f.get_symbol(41), 13);
-    //         assert_eq!(f.get_symbol(17), 7);
-    //         assert_eq!(f.get_symbol(18), 7);
-    //         assert_eq!(f.get_symbol(19), 7);
-    //     }
-
-    //     #[test]
-    //     fn test_build_example_table() {
-    //         let mut f = Fenwick::new();
-    //         let expected: Vec<usize> = vec![0, 1, 2, 1, 7, 3, 8, 2, 20, 6, 11, 4, 16, 1, 10];
-    //         let counts: Vec<usize> = vec![0, 1, 1, 1, 4, 3, 5, 2, 3, 6, 5, 4, 1, 1, 9];
-    //         for (sym, count) in counts.iter().enumerate() {
-    //             for _ in 0..*count {
-    //                 f.update_freq_count(sym as u8);
-    //             }
-    //         }
-    //         assert_eq!(f.freq.as_ref(), expected);
-    //     }
-
-    //     // TODO Test if increment with 256 elements work
+        #[test]
+        fn test_symbol_recovery() {
+            let f = get_example_from_paper();
+            assert_eq!(f.get_symbol(28), &9u8);
+            assert_eq!(f.get_symbol(5), &3u8);
+            assert_eq!(f.get_symbol(13), &5u8);
+            assert_eq!(f.get_symbol(36), &12u8);
+            assert_eq!(f.get_symbol(40), &13u8);
+            assert_eq!(f.get_symbol(41), &13u8);
+            assert_eq!(f.get_symbol(17), &7u8);
+            assert_eq!(f.get_symbol(18), &7u8);
+            assert_eq!(f.get_symbol(19), &7u8);
+        }
 }
