@@ -147,7 +147,7 @@ pub fn fenwick_with_binary_frequencies(
 ) -> Fenwick<map::Cartographer<u8>> {
     assert_eq!(frequencies.len(), symbols.len());
     assert!(frequencies.iter().fold(true, |acc, &s| acc & (s != 0usize)));
-    assert_eq!(symbols.len(), symbols.iter().collect::<HashSet<_>>().into_iter().collect::<Vec<_>>().len());
+    assert_eq!(symbols.len(), symbols.iter().collect::<HashSet<_>>().len());
     let mut f = Fenwick::<map::Cartographer<u8>>::new();
     for (x, mut count) in symbols.iter().zip(frequencies) {
         while count > 0 {
@@ -164,7 +164,7 @@ pub fn fenwick_with_string_frequencies(
 ) -> Fenwick<map::Cartographer<String>> {
     assert_eq!(frequencies.len(), symbols.len());
     assert!(frequencies.iter().fold(true, |acc, &s| acc & (s != 0usize)));
-    assert_eq!(symbols.len(), symbols.iter().collect::<HashSet<_>>().into_iter().collect::<Vec<_>>().len());
+    assert_eq!(symbols.len(), symbols.iter().collect::<HashSet<_>>().len());
     let mut f = Fenwick::<map::Cartographer<String>>::new();
     for (x, mut count) in symbols.iter().zip(frequencies) {
         while count > 0 {
@@ -181,7 +181,7 @@ pub fn fenwick_with_vector_frequencies(
 ) -> Fenwick<map::Cartographer<Vec<u8>>> {
     assert_eq!(frequencies.len(), symbols.len());
     assert!(frequencies.iter().fold(true, |acc, &s| acc & (s != 0usize)));
-    assert_eq!(symbols.len(), symbols.iter().collect::<HashSet<_>>().into_iter().collect::<Vec<_>>().len());
+    assert_eq!(symbols.len(), symbols.iter().collect::<HashSet<_>>().len());
     let mut f = Fenwick::<map::Cartographer<Vec<u8>>>::new();
     for (x, mut count) in symbols.iter().zip(frequencies) {
         while count > 0 {
