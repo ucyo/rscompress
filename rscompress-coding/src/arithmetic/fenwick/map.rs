@@ -1,4 +1,9 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::fmt;
+use std::{
+    collections::HashMap,
+    error::Error,
+    fmt::{Debug, Display},
+};
 
 /// Mapping of arbitary elements to index position for frequency counts
 pub type Mapping<T> = HashMap<T, usize>;
@@ -18,7 +23,7 @@ pub trait Map: Default + Debug {
     /// Create new mapping
     fn new() -> Self;
     /// Get index for Symbol
-    fn get_index_of(&self, symbol: &Self::Input) -> Option<usize>;
+    fn get_index_of(&self, symbol: &Self::Input) -> Result<usize, MapError>;
     /// Install a symbol by associating an index position with the symbol
     fn install(&mut self, symbol: &Self::Input) -> usize;
     /// Get inner mapping as a reference
@@ -26,7 +31,7 @@ pub trait Map: Default + Debug {
     /// Get the number of elements being mapped
     fn alphabet_size(&self) -> usize;
     /// Get Symbol at index position
-    fn get_symbol_at(&self, ix: usize) -> &Self::Input;
+    fn get_symbol_at(&self, ix: usize) -> Result<&Self::Input, MapError>;
 }
 
 /// Maps arbitary alphabets to usize and back
@@ -65,11 +70,11 @@ impl Map for Cartographer<u8> {
     fn new() -> Self {
         Default::default()
     }
-    fn get_index_of(&self, symbol: &Self::Input) -> Option<usize> {
+    fn get_index_of(&self, symbol: &Self::Input) -> Result<usize, MapError> {
         let sym = self.map.get(symbol);
         match sym {
-            Some(&v) => Some(v),
-            None => None,
+            Some(&v) => Ok(v),
+            None => Err(MapError::UnknownIndexError),
         }
     }
     fn install(&mut self, symbol: &Self::Input) -> usize {
@@ -85,12 +90,12 @@ impl Map for Cartographer<u8> {
     fn alphabet_size(&self) -> usize {
         self.map.len()
     }
-    fn get_symbol_at(&self, ix: usize) -> &Self::Input {
+    fn get_symbol_at(&self, ix: usize) -> Result<&Self::Input, MapError> {
         let result = self
             .map
             .iter()
             .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
-        result.unwrap()
+        result.ok_or(MapError::UnknownSymbolError)
     }
 }
 
@@ -110,8 +115,11 @@ impl Map for Cartographer<Vec<u8>> {
     fn new() -> Self {
         Default::default()
     }
-    fn get_index_of(&self, symbol: &Self::Input) -> Option<usize> {
-        Some(*self.map.get(symbol).unwrap())
+    fn get_index_of(&self, symbol: &Self::Input) -> Result<usize, MapError> {
+        match self.map.get(symbol) {
+            Some(&v) => Ok(v),
+            None => Err(MapError::UnknownIndexError),
+        }
     }
     fn install(&mut self, symbol: &Self::Input) -> usize {
         assert!(self.map.get(symbol).is_none());
@@ -127,12 +135,12 @@ impl Map for Cartographer<Vec<u8>> {
     fn alphabet_size(&self) -> usize {
         self.map.len()
     }
-    fn get_symbol_at(&self, ix: usize) -> &Self::Input {
+    fn get_symbol_at(&self, ix: usize) -> Result<&Self::Input, MapError> {
         let result = self
             .map
             .iter()
             .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
-        result.unwrap()
+        result.ok_or(MapError::UnknownSymbolError)
     }
 }
 
@@ -152,10 +160,10 @@ impl Map for Cartographer<String> {
     fn new() -> Self {
         Default::default()
     }
-    fn get_index_of(&self, symbol: &Self::Input) -> Option<usize> {
+    fn get_index_of(&self, symbol: &Self::Input) -> Result<usize, MapError> {
         match self.map.get(symbol) {
-            Some(&v) => Some(v),
-            None => None,
+            Some(&v) => Ok(v),
+            None => Err(MapError::UnknownIndexError),
         }
     }
     fn install(&mut self, symbol: &Self::Input) -> usize {
@@ -172,12 +180,13 @@ impl Map for Cartographer<String> {
     fn alphabet_size(&self) -> usize {
         self.map.len()
     }
-    fn get_symbol_at(&self, ix: usize) -> &Self::Input {
+    fn get_symbol_at(&self, ix: usize) -> Result<&Self::Input, MapError> {
         let result = self
             .map
             .iter()
             .find_map(|(key, &val)| if val == ix { Some(key) } else { None });
-        result.unwrap()
+        result.ok_or(MapError::UnknownSymbolError)
+    }
 }
 #[derive(Debug)]
 pub enum MapError {
@@ -318,7 +327,7 @@ mod tests {
             assert_eq!(bcart.get_index_of(&symbol.1).unwrap(), symbol.0 + 1)
         }
         assert_eq!(bcart.alphabet_size(), symbols.len());
-        assert_eq!(*bcart.get_symbol_at(4), symbols[3]);
+        assert_eq!(*bcart.get_symbol_at(4).unwrap(), symbols[3]);
     }
 
     #[test]
@@ -358,6 +367,6 @@ mod tests {
             assert_eq!(bcart.get_index_of(&symbol.1).unwrap(), symbol.0 + 1)
         }
         assert_eq!(bcart.alphabet_size(), symbols.len());
-        assert_eq!(*bcart.get_symbol_at(4), symbols[3]);
+        assert_eq!(*bcart.get_symbol_at(4).unwrap(), symbols[3]);
     }
 }
