@@ -11,6 +11,7 @@ trait Statistics {
     fn update_freq_count(&mut self, symbol: &Self::Symbol);
     fn get_symbol(&self, target: usize) -> &Self::Symbol;
     fn get_total(&self) -> usize;
+    fn feed(&mut self, data: &[Self::Symbol]);
 }
 
 trait AriCoder {

@@ -137,6 +137,12 @@ impl<M: Map> Statistics for Fenwick<M> {
         let total = self.get_total();
         (lower, higher, total)
     }
+
+    fn feed(&mut self, data: &[Self::Symbol]) {
+        for symbol in data {
+            self.update_freq_count(symbol);
+        }
+    }
 }
 
 // TODO: Integrate methods into struct [low priority]
@@ -339,5 +345,17 @@ mod tests {
         assert_eq!(f.get_symbol(17), &7u8);
         assert_eq!(f.get_symbol(18), &7u8);
         assert_eq!(f.get_symbol(19), &7u8);
+    }
+
+    #[test]
+    fn test_feeder() {
+        let data: Vec<u8> = vec![
+            1, 2, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 10, 10,
+            10, 10, 10, 11, 11, 11, 11, 12, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+        ];
+        let expected = get_example_from_paper();
+        let mut f = Fenwick::<Cartographer<u8>>::new();
+        f.feed(&data);
+        assert_eq!(f.get_ref(), expected.get_ref())
     }
 }
