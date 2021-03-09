@@ -15,38 +15,38 @@ fn criterion_roundtrip(c: &mut Criterion) {
         group.throughput(Throughput::Bytes(size as u64));
 
         // Testing Run Length Transformation
-        // let mut model = RunLength::new();
-        // group.bench_with_input(
-        //     BenchmarkId::new("Run-Length (T)", size),
-        //     data.as_slice(),
-        //     |b, s| {
-        //         b.iter(|| tmp = model.transform(s).unwrap());
-        //     },
-        // );
-        // group.bench_with_input(
-        //     BenchmarkId::new("Run-Length (R)", size),
-        //     tmp.as_slice(),
-        //     |b, s| {
-        //         b.iter(|| model.reverse(s).unwrap());
-        //     },
-        // );
+        let mut model = RunLength::new();
+        group.bench_with_input(
+            BenchmarkId::new("Run-Length (T)", size),
+            data.as_slice(),
+            |b, s| {
+                b.iter(|| tmp = model.transform(s).unwrap());
+            },
+        );
+        group.bench_with_input(
+            BenchmarkId::new("Run-Length (R)", size),
+            tmp.as_slice(),
+            |b, s| {
+                b.iter(|| model.reverse(s).unwrap());
+            },
+        );
 
-        // // Testing Move To Front Transformation
-        // let mut model = MoveToFront::new();
-        // group.bench_with_input(
-        //     BenchmarkId::new("Move-To-Front (T)", size),
-        //     data.as_slice(),
-        //     |b, s| {
-        //         b.iter(|| tmp = model.transform(s).unwrap());
-        //     },
-        // );
-        // group.bench_with_input(
-        //     BenchmarkId::new("Move-To-Front (R)", size),
-        //     tmp.as_slice(),
-        //     |b, s| {
-        //         b.iter(|| model.reverse(s).unwrap());
-        //     },
-        // );
+        // Testing Move To Front Transformation
+        let mut model = MoveToFront::new();
+        group.bench_with_input(
+            BenchmarkId::new("Move-To-Front (T)", size),
+            data.as_slice(),
+            |b, s| {
+                b.iter(|| tmp = model.transform(s).unwrap());
+            },
+        );
+        group.bench_with_input(
+            BenchmarkId::new("Move-To-Front (R)", size),
+            tmp.as_slice(),
+            |b, s| {
+                b.iter(|| model.reverse(s).unwrap());
+            },
+        );
 
         // Testing Burrow Wheeler Transformation
         let mut model = BurrowWheeler::new();
