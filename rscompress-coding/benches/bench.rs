@@ -15,7 +15,7 @@ fn statistics(c: &mut Criterion) {
 
         let mut f = FenwickStatistics::<u8>::new();
         group.bench_with_input(
-            BenchmarkId::new("Fenwick (u8)", size),
+            BenchmarkId::new("Fenwick-u8", size),
             data.as_slice(),
             |b, s| {
                 b.iter(|| f.feed(s))
@@ -23,6 +23,11 @@ fn statistics(c: &mut Criterion) {
         );
     }
 }
+use pprof::criterion::{PProfProfiler, Output};
 
-criterion_group!(transform, statistics);
-criterion_main!(transform);
+criterion_group!{
+    name = stats;
+    config = Criterion::default().with_profiler(PProfProfiler::new(100, Output::Flamegraph(None)));
+    targets = statistics
+}
+criterion_main!(stats);
