@@ -1,9 +1,9 @@
 #![allow(dead_code, unused_variables)]
 use crate::arithmetic::Statistics;
+use crate::arithmetic::StatisticsError;
 use log::debug;
 use map::Map;
 use std::collections::HashSet;
-use crate::arithmetic::StatisticsError;
 
 pub(crate) mod map;
 
@@ -93,7 +93,7 @@ impl<M: Map> Statistics for Fenwick<M> {
         Ok(self.map.get_symbol_at(ix)?)
     }
 
-    fn update_freq_count(&mut self, symbol: &Self::Symbol) -> Result<(), StatisticsError>{
+    fn update_freq_count(&mut self, symbol: &Self::Symbol) -> Result<(), StatisticsError> {
         debug!("Update freq of [{:?}] at {:?}", symbol, self);
         let ix = self.map.get_index_of(symbol).ok();
         match ix {
