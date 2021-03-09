@@ -16,3 +16,8 @@ log = "0.4.*"
 
 [dev-dependencies]
 rand = "0.8.*"
+criterion = {version = "0.3.*", features = ["html_reports"]}
+
+[[bench]]
+name = "bench"
+harness = false
