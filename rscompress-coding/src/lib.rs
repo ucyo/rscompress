@@ -1,4 +1,4 @@
-mod arithmetic;
+pub mod arithmetic;
 
 pub trait Code {
     fn encode(&mut self, source: &[u8]) -> Result<Vec<u8>, CodeError>;

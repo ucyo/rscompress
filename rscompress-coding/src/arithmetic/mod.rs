@@ -20,8 +20,9 @@
 use std::error::Error;
 use std::fmt;
 use std::fmt::{Debug, Display};
-
 mod fenwick;
+
+pub type FenwickStatistics<T> = fenwick::Fenwick<fenwick::map::Cartographer<T>>;
 
 trait Context {}
 
@@ -29,7 +30,7 @@ trait Model {
     fn get_current_context(&self) -> Box<dyn Context>;
 }
 
-trait Statistics {
+pub trait Statistics {
     type Symbol;
     fn get_freq_bounds(&self, symbol: &Self::Symbol) -> (usize, usize, usize);
     fn update_freq_count(&mut self, symbol: &Self::Symbol) -> Result<(), StatisticsError>;
