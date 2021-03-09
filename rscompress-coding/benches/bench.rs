@@ -1,6 +1,7 @@
 use criterion::{criterion_group, criterion_main};
 use criterion::{BenchmarkId, Criterion, Throughput};
-use rscompress_coding::arithmetic::{Statistics, FenwickStatistics};
+use pprof::criterion::{Output, PProfProfiler};
+use rscompress_coding::arithmetic::{FenwickStatistics, Statistics};
 
 const MIN_DATA_SIZE: usize = 1_000;
 const FACTORS: [usize; 5] = [1, 5, 10, 50, 100];
@@ -17,15 +18,12 @@ fn statistics(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::new("Fenwick-u8", size),
             data.as_slice(),
-            |b, s| {
-                b.iter(|| f.feed(s))
-            }
+            |b, s| b.iter(|| f.feed(s)),
         );
     }
 }
-use pprof::criterion::{PProfProfiler, Output};
 
-criterion_group!{
+criterion_group! {
     name = stats;
     config = Criterion::default().with_profiler(PProfProfiler::new(100, Output::Flamegraph(None)));
     targets = statistics

@@ -1,9 +1,9 @@
+use hashbrown::HashMap;
 use std::fmt;
 use std::{
     error::Error,
     fmt::{Debug, Display},
 };
-use hashbrown::HashMap;
 
 /// Mapping of arbitary elements to index position for frequency counts
 pub type Mapping<T> = HashMap<T, usize>;
