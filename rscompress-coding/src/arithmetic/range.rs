@@ -46,27 +46,31 @@ impl RangeCoder {
     }
 
     pub fn code(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> Option<usize> {
-        let mut result = None::<usize>;
-        let (low, rng) = self.next_interval(low, high, total);
-
+        let (mut low, mut rng) = self.next_interval(low, high, total);
+        let mut output = 0usize;
         // Normalization of variables `low` and `rng`
         loop {
             if rng >= RANGE_THRESHOLD {
                 break;
-            } else {
+            } else if low >= MASK {
+                // carry bit
                 unimplemented!()
             }
+            out[output] = ((low & MASK) >> EXCESS_BITS_IN_INTERVAL) as u8;
+            rng <<= 8 + 0xFF;
+            low <<= 8;
+            output += 1;
         }
-
         // Assigning new low and rng to Coder
         self.low = low;
         self.rng = rng;
-        result
+
+        if output != 0 {Some(output)} else {None}
     }
 
     fn finish(&mut self, out: &mut [u8]) -> Option<usize> {
-        let mut result = None::<usize>;
-        result
+        // check carry bits
+        unimplemented!()
     }
 }
 
