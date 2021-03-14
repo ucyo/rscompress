@@ -1,6 +1,6 @@
 use crate::{Transform, TransformError};
-use log::debug;
 use hashbrown::HashMap;
+use log::debug;
 use suffix_array::SuffixArray;
 
 /// Burrow-Wheeler transformation
