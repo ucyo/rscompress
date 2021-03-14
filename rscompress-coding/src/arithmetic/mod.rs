@@ -21,6 +21,7 @@ use std::error::Error;
 use std::fmt;
 use std::fmt::{Debug, Display};
 mod fenwick;
+mod range;
 
 pub type FenwickStatistics<T> = fenwick::Fenwick<fenwick::map::Cartographer<T>>;
 
