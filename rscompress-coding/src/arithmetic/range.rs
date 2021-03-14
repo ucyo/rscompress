@@ -46,13 +46,12 @@ impl RangeCoder {
     }
 
     pub fn code(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> Option<usize> {
-        let result = None::<usize>;
+        let mut result = None::<usize>;
         let (low, rng) = self.next_interval(low, high, total);
 
-        // Normalization loop
+        // Normalization of variables `low` and `rng`
         loop {
             if rng >= RANGE_THRESHOLD {
-                // enough room in range
                 break;
             } else {
                 unimplemented!()
@@ -62,6 +61,11 @@ impl RangeCoder {
         // Assigning new low and rng to Coder
         self.low = low;
         self.rng = rng;
+        result
+    }
+
+    fn finish(&mut self, out: &mut [u8]) -> Option<usize> {
+        let mut result = None::<usize>;
         result
     }
 }
