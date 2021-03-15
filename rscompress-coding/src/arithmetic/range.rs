@@ -104,6 +104,38 @@ impl Default for RangeCoder {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::arithmetic::fenwick::fenwick_with_string_frequencies as ffreq;
+    use crate::arithmetic::FenwickStatistics;
+    use crate::arithmetic::Statistics;
+
+    fn get_skewed_example_two() -> FenwickStatistics<String> {
+        let symbols: Vec<String> = vec![
+            "A3".to_string(),
+            "A2".to_string(),
+            "A1".to_string(),
+            "eof".to_string(),
+        ];
+        let freq: Vec<usize> = vec![23162, 975000, 1837, 1];
+        ffreq(freq, symbols)
+    }
+
+    fn get_skewed_example_one() -> FenwickStatistics<String> {
+        let symbols: Vec<String> = vec!["A3".to_string(), "A2".to_string(), "A1".to_string()];
+        let freq: Vec<usize> = vec![231, 9750, 18];
+        ffreq(freq, symbols)
+    }
+
+    fn get_swiss_example() -> FenwickStatistics<String> {
+        let symbols: Vec<String> = vec![
+            "S".to_string(),
+            "W".to_string(),
+            "I".to_string(),
+            "M".to_string(),
+            "_".to_string(),
+        ];
+        let freq: Vec<usize> = vec![5, 1, 2, 1, 1];
+        ffreq(freq, symbols)
+    }
 
     #[test]
     fn test_init() {
@@ -112,11 +144,14 @@ mod tests {
         assert_eq!(enc.rng, INTERVAL::MAX);
     }
     #[test]
-    fn test_update() {
+    fn test_next_interval() {
         let enc = RangeCoder::new();
-        let (l, r) = enc.next_interval(5, 10, 10);
+        let ff = get_swiss_example();
+        let (l, h, t) = ff.get_freq_bounds(&"S".to_string());
+        println!("{} {} {}", l, h, t);
+        let (l, r) = enc.next_interval(l as u32, h as u32, t as u32);
 
-        assert_eq!(l, (INTERVAL::MAX >> 1) - 2);
+        assert_eq!(l, 0);
         assert_eq!(r, (INTERVAL::MAX >> 1) - 2);
     }
 
@@ -128,5 +163,23 @@ mod tests {
 
         assert_eq!(enc.low, (INTERVAL::MAX >> 1) - 2);
         assert_eq!(enc.rng, (INTERVAL::MAX >> 1) - 2);
+    }
+
+    #[test]
+    fn test_edge_case_one() {
+        // a3 a3 a3 a3 a3
+        assert!(false)
+    }
+
+    #[test]
+    fn test_edge_case_two() {
+        // a3 a3 a3 a3 eof
+        assert!(false)
+    }
+
+    #[test]
+    fn test_edge_case_three() {
+        // a2 a2 a1 a3 a3
+        assert!(false)
     }
 }
