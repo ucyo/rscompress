@@ -75,7 +75,7 @@ impl RangeCoder {
     fn finish(&mut self, out: &mut [u8]) -> Option<usize> {
         let mut output = 0usize;
         if self.low >= MASK {
-            // check carry bits
+            // check carry bits and counter
             unimplemented!()
         }
         // It is actually not necessary to put out all bytes.
@@ -129,13 +129,13 @@ mod tests {
 
     fn get_swiss_example() -> FenwickStatistics<String> {
         let symbols: Vec<String> = vec![
-            "S".to_string(),
-            "W".to_string(),
-            "I".to_string(),
-            "M".to_string(),
             "_".to_string(),
+            "M".to_string(),
+            "I".to_string(),
+            "W".to_string(),
+            "S".to_string(),
         ];
-        let freq: Vec<usize> = vec![5, 1, 2, 1, 1];
+        let freq: Vec<usize> = vec![1, 1, 2, 1, 5];
         ffreq(freq, symbols)
     }
 
@@ -153,7 +153,7 @@ mod tests {
         println!("{} {} {}", l, h, t);
         let (l, r) = enc.next_interval(l as u32, h as u32, t as u32);
 
-        assert_eq!(l, 0);
+        assert_eq!(l, (INTERVAL::MAX >> 1) - 2);
         assert_eq!(r, (INTERVAL::MAX >> 1) - 2);
     }
 
@@ -161,7 +161,11 @@ mod tests {
     fn test_coding() {
         let mut enc = RangeCoder::new();
         let mut output = vec![0];
-        enc.code(5, 10, 10, &mut output);
+        let ff = get_swiss_example();
+        for s in vec!["S"] { // TODO test complete SWISS_MISS
+            let (l, h, t) = ff.get_freq_bounds(&s.to_string());
+            enc.code(l as u32, h as u32, t as u32, &mut output);
+        }
 
         assert_eq!(enc.low, (INTERVAL::MAX >> 1) - 2);
         assert_eq!(enc.rng, (INTERVAL::MAX >> 1) - 2);
@@ -169,19 +173,19 @@ mod tests {
 
     #[test]
     fn test_edge_case_one() {
-        // a3 a3 a3 a3 a3
+        // TODO a3 a3 a3 a3 a3
         assert!(false)
     }
 
     #[test]
     fn test_edge_case_two() {
-        // a3 a3 a3 a3 eof
+        // TODO a3 a3 a3 a3 eof
         assert!(false)
     }
 
     #[test]
     fn test_edge_case_three() {
-        // a2 a2 a1 a3 a3
+        // TODO a2 a2 a1 a3 a3
         assert!(false)
     }
 }
