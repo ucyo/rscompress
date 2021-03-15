@@ -78,6 +78,8 @@ impl RangeCoder {
             // check carry bits
             unimplemented!()
         }
+        // It is actually not necessary to put out all bytes.
+        // Any code between low and low+range is possible
         out[output] = ((self.low >> 24) & 0xFF) as u8;
         output += 1;
         out[output] = ((self.low >> 16) & 0xFF) as u8;
