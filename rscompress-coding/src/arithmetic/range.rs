@@ -65,12 +65,33 @@ impl RangeCoder {
         self.low = low;
         self.rng = rng;
 
-        if output != 0 {Some(output)} else {None}
+        if output != 0 {
+            Some(output)
+        } else {
+            None
+        }
     }
 
     fn finish(&mut self, out: &mut [u8]) -> Option<usize> {
-        // check carry bits
-        unimplemented!()
+        let mut output = 0usize;
+        if self.low >= MASK {
+            // check carry bits
+            unimplemented!()
+        }
+        out[output] = ((self.low >> 24) & 0xFF) as u8;
+        output += 1;
+        out[output] = ((self.low >> 16) & 0xFF) as u8;
+        output += 1;
+        out[output] = ((self.low >> 8) & 0xFF) as u8;
+        output += 1;
+        out[output] = (self.low & 0xFF) as u8;
+        output += 1;
+
+        if output != 0 {
+            Some(output)
+        } else {
+            None
+        }
     }
 }
 
