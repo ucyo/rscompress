@@ -57,7 +57,7 @@ impl RangeCoder {
                 unimplemented!()
             }
             out[output] = ((low & MASK) >> EXCESS_BITS_IN_INTERVAL) as u8;
-            rng <<= 8 + 0xFF;
+            rng = (rng << 8) + 0xFF;
             low <<= 8;
             output += 1;
         }
