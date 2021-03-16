@@ -1,17 +1,15 @@
 #![allow(dead_code)]
 use std::{fmt, fmt::Display};
 
-const OUTPUT_BITS: u32 = 8;
-
 type INTERVAL = u32;
 const INTERVAL_BITS: u32 = 32;
-
+const OUTPUT_BITS: u32 = 8;
 const EXCESS_BITS_IN_INTERVAL: u32 = INTERVAL_BITS - OUTPUT_BITS;
 const RANGE_THRESHOLD: u32 = 1 << EXCESS_BITS_IN_INTERVAL;
 const MASK: u32 = 0xFF << EXCESS_BITS_IN_INTERVAL;
 
 #[derive(Debug)]
-struct RangeCoder {
+pub struct RangeCoder {
     low: INTERVAL,
     rng: INTERVAL,
 }
@@ -33,7 +31,7 @@ impl RangeCoder {
     }
 
     /// Calculate new `low` and `rng` values
-    pub fn next_interval(&self, low: u32, high: u32, total: u32) -> (INTERVAL, INTERVAL) {
+    fn next_interval(&self, low: u32, high: u32, total: u32) -> (INTERVAL, INTERVAL) {
         let range = self.rng / total;
         let new_low = self.low + low * range;
 
@@ -45,11 +43,12 @@ impl RangeCoder {
         (new_low, new_rng)
     }
 
-    pub fn code(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> Option<usize> {
+    pub fn drink(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> usize {
         let (mut low, mut rng) = self.next_interval(low, high, total);
+
         let mut output = 0usize;
-        // Normalization of variables `low` and `rng`
         loop {
+            // Normalization of variables `low` and `rng`
             if rng >= RANGE_THRESHOLD {
                 break;
             } else if low >= MASK {
@@ -61,18 +60,13 @@ impl RangeCoder {
             low <<= 8;
             output += 1;
         }
-        // Assigning new low and rng to Coder
         self.low = low;
         self.rng = rng;
 
-        if output != 0 {
-            Some(output)
-        } else {
-            None
-        }
+        output
     }
 
-    fn finish(&mut self, out: &mut [u8]) -> Option<usize> {
+    fn finish(&mut self, out: &mut [u8]) -> usize {
         let mut output = 0usize;
         if self.low >= MASK {
             // check carry bits and counter
@@ -89,11 +83,7 @@ impl RangeCoder {
         out[output] = (self.low & 0xFF) as u8;
         output += 1;
 
-        if output != 0 {
-            Some(output)
-        } else {
-            None
-        }
+        output
     }
 }
 
@@ -164,7 +154,7 @@ mod tests {
         let ff = get_swiss_example();
         for s in vec!["S"] { // TODO test complete SWISS_MISS
             let (l, h, t) = ff.get_freq_bounds(&s.to_string());
-            enc.code(l as u32, h as u32, t as u32, &mut output);
+            enc.drink(l as u32, h as u32, t as u32, &mut output);
         }
 
         assert_eq!(enc.low, (INTERVAL::MAX >> 1) - 2);
