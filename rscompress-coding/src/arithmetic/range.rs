@@ -24,10 +24,21 @@ impl Display for RangeCoder {
     }
 }
 
+impl Default for RangeCoder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RangeCoder {
     /// Create new Range Encoder
     pub fn new() -> Self {
         RangeCoder { low: 0, rng: !0 }
+    }
+
+    /// Reset values
+    pub fn reset(&mut self) {
+        self.low = 0; self.rng = !0;
     }
 
     /// Calculate new `low` and `rng` values
@@ -44,7 +55,7 @@ impl RangeCoder {
     }
 
     /// Drink the symbols
-    pub fn drink(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> usize {
+    pub fn update(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> usize {
         let (mut low, mut rng) = self.next_interval(low, high, total);
 
         let mut output = 0usize;
@@ -87,12 +98,13 @@ impl RangeCoder {
 
         output
     }
-}
 
-impl Default for RangeCoder {
-    fn default() -> Self {
-        Self::new()
+    /// Get truncated index position of symbol
+    fn get_index(&self, code: u32, total: u32) -> u32 {
+        assert!(self.low <= code && code <= (self.low + self.rng));
+        ((code - self.low) * total) / self.rng
     }
+
 }
 
 #[cfg(test)]
@@ -156,7 +168,7 @@ mod tests {
         let ff = get_swiss_example();
         for s in vec!["S"] { // TODO test complete SWISS_MISS
             let (l, h, t) = ff.get_freq_bounds(&s.to_string());
-            enc.drink(l as u32, h as u32, t as u32, &mut output);
+            enc.update(l as u32, h as u32, t as u32, &mut output);
         }
 
         assert_eq!(enc.low, (INTERVAL::MAX >> 1) - 2);
