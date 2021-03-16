@@ -43,6 +43,7 @@ impl RangeCoder {
         (new_low, new_rng)
     }
 
+    /// Drink the symbols
     pub fn drink(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> usize {
         let (mut low, mut rng) = self.next_interval(low, high, total);
 
@@ -66,7 +67,8 @@ impl RangeCoder {
         output
     }
 
-    fn finish(&mut self, out: &mut [u8]) -> usize {
+    /// Finish drinking the symbols
+    pub fn finish(&mut self, out: &mut [u8]) -> usize {
         let mut output = 0usize;
         if self.low >= MASK {
             // check carry bits and counter
