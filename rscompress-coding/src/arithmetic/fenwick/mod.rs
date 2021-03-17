@@ -139,13 +139,6 @@ impl<M: Map> Statistics for Fenwick<M> {
         let total = self.get_total();
         (lower, higher, total)
     }
-
-    fn feed(&mut self, data: &[Self::Symbol]) -> Result<(), StatisticsError> {
-        for symbol in data {
-            self.update_freq_count(symbol)?;
-        }
-        Ok(())
-    }
 }
 
 // TODO: Integrate methods into struct [low priority]

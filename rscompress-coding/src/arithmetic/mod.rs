@@ -37,7 +37,12 @@ pub trait Statistics {
     fn update_freq_count(&mut self, symbol: &Self::Symbol) -> Result<(), StatisticsError>;
     fn get_symbol(&self, target: usize) -> Result<&Self::Symbol, StatisticsError>;
     fn get_total(&self) -> usize;
-    fn feed(&mut self, data: &[Self::Symbol]) -> Result<(), StatisticsError>;
+    fn feed(&mut self, data: &[Self::Symbol]) -> Result<(), StatisticsError> {
+        for symbol in data {
+            self.update_freq_count(symbol)?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug)]
