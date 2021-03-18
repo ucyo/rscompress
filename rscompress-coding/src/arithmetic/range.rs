@@ -125,6 +125,11 @@ impl<W: Write> Encoder<W> {
         let count = self.coder.update(low as u32, high as u32, total as u32, &mut out);
         self.inner.write(&out[..count])
     }
+    pub fn finish(&mut self) -> Result<usize, std::io::Error> {
+        let mut out = [0u8; 4];
+        self.coder.finish(&mut out);
+        self.inner.write(&out[..4])
+    }
 }
 
 
