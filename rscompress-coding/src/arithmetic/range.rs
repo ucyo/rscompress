@@ -130,6 +130,15 @@ impl<W: Write> Encoder<W> {
         self.coder.finish(&mut out);
         self.inner.write(&out[..4])
     }
+    pub fn get_ref(&self) -> &W {
+        &self.inner
+    }
+    pub fn get_mut(&mut self) -> &mut W {
+        &mut self.inner
+    }
+    pub fn into_inner(self) -> W {
+        self.inner
+    }
 }
 
 
