@@ -1,5 +1,7 @@
 #![allow(dead_code)]
-use std::{fmt, fmt::Display};
+use std::{fmt, fmt::Display, io::Write};
+
+use super::Statistics;
 
 type INTERVAL = u32;
 const INTERVAL_BITS: u32 = 32;
@@ -55,7 +57,7 @@ impl RangeCoder {
     }
 
     /// Drink the symbols
-    pub fn update(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> usize {
+    fn update(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> usize {
         let (mut low, mut rng) = self.next_interval(low, high, total);
 
         let mut output = 0usize;
@@ -79,7 +81,7 @@ impl RangeCoder {
     }
 
     /// Finish drinking the symbols
-    pub fn finish(&mut self, out: &mut [u8]) -> usize {
+    fn finish(&mut self, out: &mut [u8]) -> usize {
         let mut output = 0usize;
         if self.low >= MASK {
             // check carry bits and counter
@@ -106,6 +108,25 @@ impl RangeCoder {
     }
 
 }
+
+struct Encoder<W: Write> {
+    inner: W,
+    coder: RangeCoder,
+}
+
+impl<W: Write> Encoder<W> {
+    pub fn new(w: W) -> Self {
+        Encoder { inner: w, coder: RangeCoder::default() }
+    }
+    pub fn drink<Sym, Stat: Statistics<Symbol=Sym>>(&mut self, symbol: &Sym, ctx: &mut Stat) -> Result<usize, std::io::Error> {
+        let (low, high, total) = ctx.get_freq_bounds(symbol);
+        ctx.update_freq_count(symbol).unwrap();
+        let mut out = [0u8; 4];
+        let count = self.coder.update(low as u32, high as u32, total as u32, &mut out);
+        self.inner.write(&out[..count])
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
