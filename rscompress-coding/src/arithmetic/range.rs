@@ -109,7 +109,7 @@ impl RangeCoder {
 
 }
 
-struct Encoder<W: Write> {
+pub struct Encoder<W: Write> {
     inner: W,
     coder: RangeCoder,
 }
