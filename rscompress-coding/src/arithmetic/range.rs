@@ -146,8 +146,8 @@ pub struct Decoder<R: Read> {
 
 impl<R: Read> Decoder<R> {
     pub fn new(mut r: R, bytes: usize) -> Self {
-        let low_value: u32 = r.read_u32::<BigEndian>().unwrap();
-        Decoder { inner: r, coder: RangeCoder::new(), bytecount: bytes, value: low_value}
+        let value: u32 = r.read_u32::<BigEndian>().unwrap();
+        Decoder { inner: r, coder: RangeCoder::new(), bytecount: bytes, value}
     }
     fn fill(&mut self, mut count: usize) {
         while count > 0 {
