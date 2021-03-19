@@ -14,6 +14,7 @@ repository = "https://github.com/ucyo/rscompress/"
 [dependencies]
 log = "0.4.*"
 hashbrown = "0.7.*"
+byteorder = "1.4.*"
 
 [dev-dependencies]
 rand = "0.8.*"

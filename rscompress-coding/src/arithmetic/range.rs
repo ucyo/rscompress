@@ -1,5 +1,6 @@
 #![allow(dead_code)]
-use std::{fmt, fmt::Display, io::Write};
+use std::{fmt, fmt::Display, io::Write, io::Read};
+use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
 use super::Statistics;
 
@@ -81,7 +82,7 @@ impl RangeCoder {
     }
 
     /// Finish drinking the symbols
-    fn finish(&mut self, out: &mut [u8]) -> usize {
+    fn finish(&mut self, mut out: &mut [u8]) -> usize {
         let mut output = 0usize;
         if self.low >= MASK {
             // check carry bits and counter
@@ -89,14 +90,8 @@ impl RangeCoder {
         }
         // It is actually not necessary to put out all bytes.
         // Any code between low and low+range is possible
-        out[output] = ((self.low >> 24) & 0xFF) as u8;
-        output += 1;
-        out[output] = ((self.low >> 16) & 0xFF) as u8;
-        output += 1;
-        out[output] = ((self.low >> 8) & 0xFF) as u8;
-        output += 1;
-        out[output] = (self.low & 0xFF) as u8;
-        output += 1;
+        out.write_u32::<BigEndian>(self.low).unwrap();
+        output += 4;
 
         output
     }
@@ -141,6 +136,27 @@ impl<W: Write> Encoder<W> {
     }
 }
 
+
+pub struct Decoder<R: Read> {
+    inner: R,
+    coder: RangeCoder,
+    value: u32,
+    bytecount: usize,
+}
+
+impl<R: Read> Decoder<R> {
+    pub fn new(mut r: R, bytes: usize) -> Self {
+        let low_value: u32 = r.read_u32::<BigEndian>().unwrap();
+        Decoder { inner: r, coder: RangeCoder::new(), bytecount: bytes, value: low_value}
+    }
+    fn fill(&mut self, mut count: usize) {
+        while count > 0 {
+            let val = self.inner.read_u8().unwrap();
+            self.value = (self.value << 8) + val as u32;
+            count -= 1;
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
