@@ -134,6 +134,15 @@ impl<W: Write> Encoder<W> {
     pub fn into_inner(self) -> W {
         self.inner
     }
+    pub fn get_ref_coder(&self) -> &RangeCoder {
+        &self.coder
+    }
+    pub fn get_mut_coder(&mut self) -> &mut RangeCoder {
+        &mut self.coder
+    }
+    pub fn get_coder(self) -> RangeCoder {
+        self.coder
+    }
 }
 
 
