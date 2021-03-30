@@ -60,6 +60,7 @@ impl RangeCoder {
     /// Drink the symbols
     fn update(&mut self, low: u32, high: u32, total: u32, out: &mut [u8]) -> usize {
         let (mut low, mut rng) = self.next_interval(low, high, total);
+        println!("New Intervall [{:032b};{:032b}] {:032b}", low, low + rng, rng);
 
         let mut output = 0usize;
         loop {
@@ -70,14 +71,18 @@ impl RangeCoder {
                 // carry bit
                 unimplemented!()
             }
+            println!("Writing out: {0} {0:08b}", (low & MASK) >> EXCESS_BITS_IN_INTERVAL as u8);
             out[output] = ((low & MASK) >> EXCESS_BITS_IN_INTERVAL) as u8;
+            println!("Old borders: [{:032b};{:032b}] {:032b}", low, low + rng, rng);
             rng = (rng << 8) + 0xFF;
+            println!("new rng: {:032b}", rng);
             low <<= 8;
+            println!("new low: {:032b}", low);
             output += 1;
+            println!("New borders: [{:032b};{:032b}]", low, low + rng);
         }
         self.low = low;
         self.rng = rng;
-
         output
     }
 
