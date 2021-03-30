@@ -172,7 +172,7 @@ mod tests {
     use super::*;
     use crate::arithmetic::fenwick::fenwick_with_string_frequencies as ffreq;
     use crate::arithmetic::FenwickStatistics;
-    use crate::arithmetic::Statistics;
+    use std::io::Cursor;
 
     fn get_skewed_example_two() -> FenwickStatistics<String> {
         let symbols: Vec<String> = vec![
@@ -205,34 +205,36 @@ mod tests {
 
     #[test]
     fn test_init() {
-        let enc = RangeCoder::new();
-        assert_eq!(enc.low, 0);
-        assert_eq!(enc.rng, INTERVAL::MAX);
-    }
-    #[test]
-    fn test_next_interval() {
-        let enc = RangeCoder::new();
-        let ff = get_swiss_example();
-        let (l, h, t) = ff.get_freq_bounds(&"S".to_string());
-        println!("{} {} {}", l, h, t);
-        let (l, r) = enc.next_interval(l as u32, h as u32, t as u32);
+        let writer = Cursor::new(Vec::new());
+        let enc = Encoder::new(writer);
 
-        assert_eq!(l, (INTERVAL::MAX >> 1) - 2);
-        assert_eq!(r, (INTERVAL::MAX >> 1) - 2);
+        assert_eq!(enc.get_ref_coder().low, 0);
+        assert_eq!(enc.get_ref_coder().rng, INTERVAL::MAX);
+    }
+
+    #[test]
+    fn test_single_coding() {
+        let writer = Cursor::new(Vec::new());
+        let mut enc = Encoder::new(writer);
+        let mut ff = get_swiss_example();
+        enc.drink(&"S".to_string(), &mut ff).unwrap();
+
+        assert_eq!(enc.get_ref_coder().low, (INTERVAL::MAX >> 1) - 2);
+        assert_eq!(enc.get_ref_coder().rng, (INTERVAL::MAX >> 1) - 2);
     }
 
     #[test]
     fn test_coding() {
-        let mut enc = RangeCoder::new();
-        let mut output = vec![0];
-        let ff = get_swiss_example();
-        for s in vec!["S"] { // TODO test complete SWISS_MISS
-            let (l, h, t) = ff.get_freq_bounds(&s.to_string());
-            enc.update(l as u32, h as u32, t as u32, &mut output);
+        let writer = Cursor::new(Vec::new());
+        let mut enc = Encoder::new(writer);
+        let mut ff = get_swiss_example();
+        let testword: Vec<String> = vec!["S", "W", "I", "S", "S", "_", "M", "I", "S", "S"]
+            .iter_mut()
+            .map(|x| x.to_string())
+            .collect();
+        for b in testword {
+            enc.drink(&b, &mut ff).unwrap();
         }
-
-        assert_eq!(enc.low, (INTERVAL::MAX >> 1) - 2);
-        assert_eq!(enc.rng, (INTERVAL::MAX >> 1) - 2);
     }
 
     #[test]
