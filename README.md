@@ -2,7 +2,7 @@
 
 <p align=center>
   A compression library in Rust with focus on scientific data. <br><br>
-  <img src="assets/logo.svg" height="368"/>
+  <img src="https://raw.githubusercontent.com/ucyo/rscompress/master/assets/logo.svg" height="368"/>
 </p>
 
 ## Disclaimer
