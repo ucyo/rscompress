@@ -51,14 +51,14 @@ fn criterion_roundtrip(c: &mut Criterion) {
         // Testing Burrow Wheeler Transformation
         let mut model = BurrowWheeler::new();
         group.bench_with_input(
-            BenchmarkId::new("Burow-Wheeler (T)", size),
+            BenchmarkId::new("Burrow-Wheeler (T)", size),
             data.as_slice(),
             |b, s| {
                 b.iter(|| tmp = model.transform(s).unwrap());
             },
         );
         group.bench_with_input(
-            BenchmarkId::new("Burow-Wheeler (R)", size),
+            BenchmarkId::new("Burrow-Wheeler (R)", size),
             tmp.as_slice(),
             |b, s| {
                 b.iter(|| model.reverse(s).unwrap());
